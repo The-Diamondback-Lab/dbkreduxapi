@@ -1,0 +1,23 @@
+{
+  "name": "article-api",
+  "version": "1.0.0",
+  "description": "API to retrieve articles and other content from the DBK site.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/The-Diamondback-Lab/article-api.git"
+  },
+  "author": "The DBK Lab",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/The-Diamondback-Lab/article-api/issues"
+  },
+  "homepage": "https://github.com/The-Diamondback-Lab/article-api#readme",
+  "dependencies": {
+    "express": "^4.16.3",
+    "node-fetch": "^2.2.0"
+  }
+}
