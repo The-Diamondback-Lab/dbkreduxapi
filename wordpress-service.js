@@ -18,8 +18,13 @@ exports.getPosts = function(limitPosts, page, category){
          .then(data => data.json());
 }
 
-exports.getMenu = function(menu_id){
-  url = menu_url+menu_id;
-  return fetch(url)
-        .then(data => data.json());
+exports.getMenu = function(menuName){
+  return fetch(menu_url)
+  .then(data => data.json())
+  .then(allMenus => allMenus.find(menu => menu.name === menuName))
+  .then(menu => menu.term_id)
+  .then(wp_menu_id => (menu_url+wp_menu_id))
+  .then(url => fetch(url))
+  .then(data => data.json())
+  .catch(e => JSON.stringify({error: "Menu not found"}));    
 }

@@ -21,7 +21,7 @@ app.get('/menu/:id', function (req, res){
 
   res.setHeader('Content-Type', 'application/json');
   wp_api.getMenu(menu_id)
-    .then(data => res.send(data))
+  .then(data => res.send(data))
 });
 
 
