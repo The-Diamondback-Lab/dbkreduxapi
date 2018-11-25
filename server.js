@@ -10,9 +10,10 @@ app.get('/articles', function (req, res) {
   let articles = req.query.per_page;
   let page = req.query.page;
   let category = req.query.category;
+  let preview = req.query.preview;
 
   res.setHeader('Content-Type', 'application/json');
-  wp_api.getArticles(articles, page, category)
+  wp_api.getArticles(articles, page, category, preview)
     .then(data => res.send(data))
 });
 
