@@ -40,11 +40,11 @@ exports.getArticles = async function (limitArticles, page, category, prev) {
         "link": ele.link,
         "date": ele.modified,
         "excerpt": ele.excerpt.rendered,
-        "author-name": author,
+        "author": author,
         "featured-image": featuredImage
       }
     } else { //return full response with author name and featured image URL
-      ele["author-name"] = author;
+      ele["author"] = author;
       ele["featured-image"] = featuredImage;
       return ele;
     }
@@ -80,5 +80,9 @@ async function getFeaturedImage(url) {
 async function getAuthorName(url) {
   const authorResp = await fetch(url);
   const author = await authorResp.json();
-  return author.name;
+  return {
+    "id": author.id,
+    "name": author.name,
+    "link": author.link
+    };
 }

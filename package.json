@@ -1,11 +1,16 @@
 {
-  "name": "article-api",
+  "name": "dbk-api",
   "version": "1.0.0",
   "description": "API to retrieve articles and other content from the DBK site.",
+  "apidoc": {
+    "name": "The Diamondback API",
+    "title": "DBK API",
+    "url" : "localhost:8080"
+  },
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start":"node server.js"
+    "start": "apidoc -e node_modules/ | node server.js"
   },
   "repository": {
     "type": "git",

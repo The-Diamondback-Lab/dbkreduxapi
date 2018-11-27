@@ -6,6 +6,18 @@ app.get('/', function(req, res){
   res.send("Welcome to the DBK API!");
 });
 
+
+/**
+ * @api {get} /articles?preview={boolean} Gets a list of DBK articles
+ * @apiName GetArticles
+ * @apiGroup Articles
+ *
+ * @apiParam  {Boolean} preview Whether to retrieve full article data or just preview data.
+ * @apiParam  {Number} [per_page]  The number of articles to retrieve per page.
+ * @apiParam  {Number} [page] The page of articles to retrieve.
+ * @apiParam  {Number} [category] The category ID from which to retrieve articles.
+ * 
+ */
 app.get('/articles', function (req, res) {
   let articles = req.query.per_page;
   let page = req.query.page;
@@ -17,6 +29,14 @@ app.get('/articles', function (req, res) {
     .then(data => res.send(data))
 });
 
+
+/**
+ * @api {get} /articles/:articleId Gets a single DBK Article
+ * @apiName GetArticle
+ * @apiGroup Articles
+ *
+ * @apiParam  {Number} articleId Unique article ID.
+ */
 app.get('/articles/:articleId', function(req, res){
   let articleId = req.params.articleId;
 
@@ -25,7 +45,13 @@ app.get('/articles/:articleId', function(req, res){
     .then(data => res.send(data))
 });
 
-
+/**
+ * @api {get} /menu/:menuId Gets data for a menu
+ * @apiName GetMenu
+ * @apiGroup Menu
+ *
+ * @apiParam  {Number} menuId Unique Menu ID.
+ */
 app.get('/menu/:id', function (req, res){
   let menu_id = req.params.id;
 
