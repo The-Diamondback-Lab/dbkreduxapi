@@ -34,7 +34,7 @@ Open a new terminal tab and run `npm start`. This will run the server locally on
 
 ## Documentation
 
-More detailed documentation on the API can be found in the /doc folder. 
+More detailed documentation on the API can be found in the /doc folder.
 
 ## Built With
 
