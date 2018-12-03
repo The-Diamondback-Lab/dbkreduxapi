@@ -46,6 +46,7 @@ exports.getArticles = async function (limitArticles, page, category, prev) {
     } else { //return full response with author name and featured image URL
       ele["author"] = author;
       ele["featured-image"] = featuredImage;
+      delete ele["_links"];
       return ele;
     }
   });

@@ -1,6 +1,9 @@
 const express = require('express');
 const app = express();
 const wp_api = require('./wordpress-service.js');
+const cors = require('cors');
+
+app.use(cors({credentials: true, origin: true}));
 
 app.get('/', function(req, res){
   res.send("Welcome to the DBK API!");

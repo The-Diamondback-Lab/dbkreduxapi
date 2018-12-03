@@ -5,7 +5,7 @@
   "apidoc": {
     "name": "The Diamondback API",
     "title": "DBK API",
-    "url" : "localhost:8080"
+    "url": "localhost:8080"
   },
   "main": "index.js",
   "scripts": {
@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/The-Diamondback-Lab/article-api#readme",
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^4.16.3",
     "node-fetch": "^2.2.0"
   }
