@@ -1,5 +1,6 @@
 const fetch = require('node-fetch');
 
+const wp_url = "http://52.207.216.69";
 const all_posts_url = "http://52.207.216.69/wp-json/wp/v2/posts";
 const menu_url = "http://52.207.216.69/wp-json/wp-api-menus/v2/menus/"
 
@@ -46,6 +47,7 @@ exports.getArticles = async function (limitArticles, page, category, prev) {
     } else { //return full response with author name and featured image URL
       ele["author"] = author;
       ele["featured-image"] = featuredImage;
+      delete ele["_links"];
       return ele;
     }
   });
@@ -66,9 +68,30 @@ exports.getMenu = function (menuName) {
     .then(wp_menu_id => (menu_url + wp_menu_id))
     .then(url => fetch(url))
     .then(data => data.json())
+    .then(menuObj => {
+      menuObj.items.forEach(
+        menuItem => {
+          if (menuItem.type !== 'custom'){
+            replaceMenuUrl(menuItem);
+          }
+        }
+      );
+      return menuObj;
+    })
     .catch(e => JSON.stringify({
       error: "Menu not found"
     }));
+}
+
+function replaceMenuUrl(menuItem){
+  menuItem.url = menuItem.url.replace(wp_url, "");
+  if (menuItem.children){
+    menuItem.children.forEach(child => { 
+      if (menuItem.type !== 'custom'){
+        replaceMenuUrl(child);
+      }
+    });
+  }
 }
 
 async function getFeaturedImage(url) {
