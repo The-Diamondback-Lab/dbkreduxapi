@@ -18,7 +18,6 @@ exports.getArticles = async function (limitArticles, page, category, prev) {
     try{
       categoryId = await getCategoryId(category);
       url += "categories=" + categoryId;  
-      console.log(url);
     }
     catch (err) {
       return JSON.stringify({
@@ -45,9 +44,8 @@ exports.getArticles = async function (limitArticles, page, category, prev) {
       };
     }
 
-    const slug_categories = await categoryIdsToSlugs(ele['categories']);
-    console.log(slug_categories);
-    ele['categories'] = slug_categories;
+    const slug_categories = await categoryIdsToSlugs(ele.categories);
+    ele.categories = slug_categories;
 
     if (preview) { //return only necessary fields if preview flag is enabled 
       return {
@@ -57,7 +55,8 @@ exports.getArticles = async function (limitArticles, page, category, prev) {
         "date": ele.modified,
         "excerpt": ele.excerpt.rendered,
         "author": author,
-        "featured-image": featuredImage
+        "featured-image": featuredImage,
+        "categories": ele.categories
       }
     } else { //return full response with author name and featured image URL
       ele["author"] = author;
@@ -137,10 +136,8 @@ async function getCategoryId(slug){
 
 async function getCategorySlug(id){
   const req_url = categories_url + "/"+id;
-  console.log(req_url);
   const categoryResp = await fetch(req_url);
   const categoryObj = await categoryResp.json();
-  console.log(categoryObj.slug);
   return categoryObj.slug;
 }
 
