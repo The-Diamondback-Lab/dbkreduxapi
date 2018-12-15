@@ -4,9 +4,10 @@ const wp_api = require('./wordpress-service.js');
 const cors = require('cors');
 
 app.use(cors({credentials: true, origin: true}));
+app.use('/', express.static(__dirname + '/doc'));
 
 app.get('/', function(req, res){
-  res.send("Welcome to the DBK API!");
+  res.sendFile( __dirname + "/doc/index.html");
 });
 
 
@@ -18,7 +19,7 @@ app.get('/', function(req, res){
  * @apiParam  {Boolean} preview Whether to retrieve full article data or just preview data.
  * @apiParam  {Number} [per_page]  The number of articles to retrieve per page.
  * @apiParam  {Number} [page] The page of articles to retrieve.
- * @apiParam  {Number} [category] The category ID from which to retrieve articles.
+ * @apiParam  {Number} [category] The category ID (slug) from which to retrieve articles. 
  * 
  */
 app.get('/articles', function (req, res) {
