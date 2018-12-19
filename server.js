@@ -30,7 +30,7 @@ app.get('/articles', function (req, res) {
 
   res.setHeader('Content-Type', 'application/json');
   wp_api.getArticles(articles, page, category, preview)
-    .then(data => res.send(data))
+    .then(data => typeof data.response_code === 'undefined' ? (res.send(data)) : (res.status(data.response_code), res.send(data)));
 });
 
 
@@ -46,7 +46,7 @@ app.get('/articles/:articleId', function(req, res){
 
   res.setHeader('Content-Type', 'application/json');
   wp_api.getArticle(articleId)
-    .then(data => res.send(data))
+    .then(data => typeof data.response_code === 'undefined' ? (res.send(data)) : (res.status(data.response_code), res.send(data)));
 });
 
 /**
@@ -61,7 +61,7 @@ app.get('/menu/:id', function (req, res){
 
   res.setHeader('Content-Type', 'application/json');
   wp_api.getMenu(menu_id)
-  .then(data => res.send(data))
+    .then(data => typeof data.response_code === 'undefined' ? (res.send(data)) : (res.status(data.response_code), res.send(data)));
 });
 
 

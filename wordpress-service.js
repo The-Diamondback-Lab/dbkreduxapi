@@ -6,7 +6,7 @@ const menu_url = "http://52.207.216.69/wp-json/wp-api-menus/v2/menus/";
 const categories_url = "http://52.207.216.69/wp-json/wp/v2/categories";
 
 exports.getArticles = async function (limitArticles, page, category, prev) {
-  url = all_posts_url + "?";
+  var url = all_posts_url + "?";
   preview = false;
   if (typeof limitArticles != 'undefined') {
     url += "per_page=" + limitArticles + "&";
@@ -20,9 +20,11 @@ exports.getArticles = async function (limitArticles, page, category, prev) {
       url += "categories=" + categoryId;  
     }
     catch (err) {
-      return JSON.stringify({
-        error: "Invalid category"
-      });
+      return {
+        code: "invalid_category_name",
+        message: "Invalid category name.",
+        response_code: 404
+      };
     }
   }
   if (typeof prev != 'undefined') {
@@ -72,9 +74,18 @@ exports.getArticle = function (articleId) {
   url = all_posts_url + "/" + articleId;
   return fetch(url)
     .then(data => data.json())
-    .catch(e => JSON.stringify({
-      error: "Article not found"
-    }));
+    .then(resp => {
+      if (typeof resp.code !== 'undefined' && (resp.code === 'rest_no_route' || resp.code === 'rest_post_invalid_id')){
+        return {
+          code: "article_not_found",
+          message: "Article ID not found.",
+          response_code: 404
+        };
+      }
+      else{
+        return resp;
+      }
+    });
 }
 
 exports.getMenu = function (menuName) {
@@ -96,8 +107,11 @@ exports.getMenu = function (menuName) {
       return menuObj;
     })
     .catch(e => JSON.stringify({
-      error: "Menu not found"
-    }));
+      code: "menu_not_found",
+      message: "Invalid menu ID.",
+      response_code: 404
+      
+  }));
 }
 
 function replaceMenuUrl(menuItem){
