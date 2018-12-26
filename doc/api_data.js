@@ -57,7 +57,7 @@ define({ "api": [
             "type": "Number",
             "optional": true,
             "field": "category",
-            "description": "<p>The category ID from which to retrieve articles.</p>"
+            "description": "<p>The category ID (slug) from which to retrieve articles.</p>"
           }
         ]
       }

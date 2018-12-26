@@ -4,9 +4,10 @@ const wp_api = require('./wordpress-service.js');
 const cors = require('cors');
 
 app.use(cors({credentials: true, origin: true}));
+app.use('/', express.static(__dirname + '/doc'));
 
 app.get('/', function(req, res){
-  res.send("Welcome to the DBK API!");
+  res.sendFile( __dirname + "/doc/index.html");
 });
 
 
@@ -18,7 +19,7 @@ app.get('/', function(req, res){
  * @apiParam  {Boolean} preview Whether to retrieve full article data or just preview data.
  * @apiParam  {Number} [per_page]  The number of articles to retrieve per page.
  * @apiParam  {Number} [page] The page of articles to retrieve.
- * @apiParam  {Number} [category] The category ID from which to retrieve articles.
+ * @apiParam  {Number} [category] The category ID (slug) from which to retrieve articles. 
  * 
  */
 app.get('/articles', function (req, res) {
@@ -29,7 +30,7 @@ app.get('/articles', function (req, res) {
 
   res.setHeader('Content-Type', 'application/json');
   wp_api.getArticles(articles, page, category, preview)
-    .then(data => res.send(data))
+    .then(data => typeof data.response_code === 'undefined' ? (res.send(data)) : (res.status(data.response_code), res.send(data)));
 });
 
 
@@ -45,7 +46,7 @@ app.get('/articles/:articleId', function(req, res){
 
   res.setHeader('Content-Type', 'application/json');
   wp_api.getArticle(articleId)
-    .then(data => res.send(data))
+    .then(data => typeof data.response_code === 'undefined' ? (res.send(data)) : (res.status(data.response_code), res.send(data)));
 });
 
 /**
@@ -60,7 +61,7 @@ app.get('/menu/:id', function (req, res){
 
   res.setHeader('Content-Type', 'application/json');
   wp_api.getMenu(menu_id)
-  .then(data => res.send(data))
+    .then(data => typeof data.response_code === 'undefined' ? (res.send(data)) : (res.status(data.response_code), res.send(data)));
 });
 
 

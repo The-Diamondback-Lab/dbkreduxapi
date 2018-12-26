@@ -2,10 +2,11 @@ const fetch = require('node-fetch');
 
 const wp_url = "http://52.207.216.69";
 const all_posts_url = "http://52.207.216.69/wp-json/wp/v2/posts";
-const menu_url = "http://52.207.216.69/wp-json/wp-api-menus/v2/menus/"
+const menu_url = "http://52.207.216.69/wp-json/wp-api-menus/v2/menus/";
+const categories_url = "http://52.207.216.69/wp-json/wp/v2/categories";
 
 exports.getArticles = async function (limitArticles, page, category, prev) {
-  url = all_posts_url + "?";
+  var url = all_posts_url + "?";
   preview = false;
   if (typeof limitArticles != 'undefined') {
     url += "per_page=" + limitArticles + "&";
@@ -14,7 +15,17 @@ exports.getArticles = async function (limitArticles, page, category, prev) {
     url += "page=" + page + "&";
   }
   if (typeof category != 'undefined') {
-    url += "categories=" + category;
+    try{
+      categoryId = await getCategoryId(category);
+      url += "categories=" + categoryId;  
+    }
+    catch (err) {
+      return {
+        code: "invalid_category_name",
+        message: "Invalid category name.",
+        response_code: 404
+      };
+    }
   }
   if (typeof prev != 'undefined') {
     preview = (prev === "true");
@@ -34,6 +45,10 @@ exports.getArticles = async function (limitArticles, page, category, prev) {
         "caption": featuredImage.caption.rendered
       };
     }
+
+    const slug_categories = await categoryIdsToSlugs(ele.categories);
+    ele.categories = slug_categories;
+
     if (preview) { //return only necessary fields if preview flag is enabled 
       return {
         "id": ele.id,
@@ -42,7 +57,8 @@ exports.getArticles = async function (limitArticles, page, category, prev) {
         "date": ele.modified,
         "excerpt": ele.excerpt.rendered,
         "author": author,
-        "featured-image": featuredImage
+        "featured-image": featuredImage,
+        "categories": ele.categories
       }
     } else { //return full response with author name and featured image URL
       ele["author"] = author;
@@ -57,7 +73,19 @@ exports.getArticles = async function (limitArticles, page, category, prev) {
 exports.getArticle = function (articleId) {
   url = all_posts_url + "/" + articleId;
   return fetch(url)
-    .then(data => data.json());
+    .then(data => data.json())
+    .then(resp => {
+      if (typeof resp.code !== 'undefined' && (resp.code === 'rest_no_route' || resp.code === 'rest_post_invalid_id')){
+        return {
+          code: "article_not_found",
+          message: "Article ID not found.",
+          response_code: 404
+        };
+      }
+      else{
+        return resp;
+      }
+    });
 }
 
 exports.getMenu = function (menuName) {
@@ -79,8 +107,11 @@ exports.getMenu = function (menuName) {
       return menuObj;
     })
     .catch(e => JSON.stringify({
-      error: "Menu not found"
-    }));
+      code: "menu_not_found",
+      message: "Invalid menu ID.",
+      response_code: 404
+      
+  }));
 }
 
 function replaceMenuUrl(menuItem){
@@ -108,4 +139,26 @@ async function getAuthorName(url) {
     "name": author.name,
     "link": author.link
     };
+}
+
+async function getCategoryId(slug){
+  const req_url = categories_url + "?slug="+slug;
+  const categoryResp = await fetch(req_url);
+  const categoryObj = await categoryResp.json();
+  return categoryObj[0].id;
+}
+
+async function getCategorySlug(id){
+  const req_url = categories_url + "/"+id;
+  const categoryResp = await fetch(req_url);
+  const categoryObj = await categoryResp.json();
+  return categoryObj.slug;
+}
+
+async function categoryIdsToSlugs(categoryIds) {
+  const slug_categories = categoryIds.map(async (categoryId) => {
+    const slug = await getCategorySlug(categoryId);
+    return slug;
+  });
+  return Promise.all(slug_categories);
 }
