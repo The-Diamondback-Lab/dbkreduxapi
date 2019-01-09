@@ -71,11 +71,12 @@ exports.getArticles = async function (limitArticles, page, category, prev) {
 }
 
 exports.getArticle = function (articleId) {
-  url = all_posts_url + "/" + articleId;
+  articleId = articleId.trim();
+  url = all_posts_url + "?slug=" + articleId;
   return fetch(url)
     .then(data => data.json())
     .then(resp => {
-      if (typeof resp.code !== 'undefined' && (resp.code === 'rest_no_route' || resp.code === 'rest_post_invalid_id')){
+      if (resp.length === 0){
         return {
           code: "article_not_found",
           message: "Article ID not found.",
@@ -83,7 +84,7 @@ exports.getArticle = function (articleId) {
         };
       }
       else{
-        return resp;
+        return resp[0];
       }
     });
 }
