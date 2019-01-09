@@ -10,6 +10,29 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "articleId",
+            "description": "<p>Unique article ID (slug).</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./app.js",
+    "groupTitle": "Articles"
+  },
+  {
+    "type": "get",
+    "url": "/articles/:articleId",
+    "title": "Gets a single DBK Article",
+    "name": "GetArticle",
+    "group": "Articles",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
             "type": "Number",
             "optional": false,
             "field": "articleId",
@@ -63,8 +86,75 @@ define({ "api": [
       }
     },
     "version": "0.0.0",
+    "filename": "./app.js",
+    "groupTitle": "Articles"
+  },
+  {
+    "type": "get",
+    "url": "/articles?preview={boolean}",
+    "title": "Gets a list of DBK articles",
+    "name": "GetArticles",
+    "group": "Articles",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Boolean",
+            "optional": false,
+            "field": "preview",
+            "description": "<p>Whether to retrieve full article data or just preview data.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": true,
+            "field": "per_page",
+            "description": "<p>The number of articles to retrieve per page.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": true,
+            "field": "page",
+            "description": "<p>The page of articles to retrieve.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": true,
+            "field": "category",
+            "description": "<p>The category ID (slug) from which to retrieve articles.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
     "filename": "./server.js",
     "groupTitle": "Articles"
+  },
+  {
+    "type": "get",
+    "url": "/menu/:menuId",
+    "title": "Gets data for a menu",
+    "name": "GetMenu",
+    "group": "Menu",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "menuId",
+            "description": "<p>Unique menu ID.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "./app.js",
+    "groupTitle": "Menu"
   },
   {
     "type": "get",

@@ -39,7 +39,7 @@ app.get('/articles', function (req, res) {
  * @apiName GetArticle
  * @apiGroup Articles
  *
- * @apiParam  {Number} articleId Unique article ID.
+ * @apiParam  {String} articleId Unique article ID (slug).
  */
 app.get('/articles/:articleId', function(req, res){
   let articleId = req.params.articleId;
@@ -49,12 +49,13 @@ app.get('/articles/:articleId', function(req, res){
     .then(data => typeof data.response_code === 'undefined' ? (res.send(data)) : (res.status(data.response_code), res.send(data)));
 });
 
+
 /**
  * @api {get} /menu/:menuId Gets data for a menu
  * @apiName GetMenu
  * @apiGroup Menu
  *
- * @apiParam  {Number} menuId Unique Menu ID.
+ * @apiParam  {String} menuId Unique menu ID.
  */
 app.get('/menu/:id', function (req, res){
   let menu_id = req.params.id;
@@ -70,4 +71,5 @@ app.get('/ads', function (req, res){
 });
 
 
-app.listen(process.env.PORT || 8080);
+// app.listen(process.env.PORT || 8080);
+module.exports = app;
