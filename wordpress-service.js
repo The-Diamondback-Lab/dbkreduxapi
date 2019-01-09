@@ -35,9 +35,9 @@ exports.getArticles = async function (limitArticles, page, category, prev) {
   const raw = await rawResp.json();
 
   const promises = raw.map(async (ele) => {
-    author = await getAuthorName(ele['_links']['author'][0].href); //fetch author name from WP endpoint
+    var author = await getAuthorName(ele['_links']['author'][0].href); //fetch author name from WP endpoint
 
-    featuredImage = {};
+    var featuredImage = {};
     if (typeof ele['_links']['wp:featuredmedia'] != 'undefined') {
       featuredImage = await getFeaturedImage(ele['_links']['wp:featuredmedia'][0].href); //fetch featured image URL
       featuredImage = {
