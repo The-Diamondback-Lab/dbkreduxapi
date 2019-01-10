@@ -1,12 +1,12 @@
 const fetch = require('node-fetch');
 
 const wp_url = "http://52.207.216.69";
-const all_posts_url = "http://52.207.216.69/wp-json/wp/v2/posts";
+const all_posts_url = "http://52.207.216.69/wp-json/wp/v2/posts?_embed&";
 const menu_url = "http://52.207.216.69/wp-json/wp-api-menus/v2/menus/";
 const categories_url = "http://52.207.216.69/wp-json/wp/v2/categories";
 
 exports.getArticles = async function (limitArticles, page, category, prev) {
-  var url = all_posts_url + "?";
+  var url = all_posts_url;
   preview = false;
   if (typeof limitArticles != 'undefined') {
     url += "per_page=" + limitArticles + "&";
@@ -33,60 +33,36 @@ exports.getArticles = async function (limitArticles, page, category, prev) {
 
   const rawResp = await fetch(url);
   const raw = await rawResp.json();
-
-  const promises = raw.map(async (ele) => {
-    var author = await getAuthorName(ele['_links']['author'][0].href); //fetch author name from WP endpoint
-
-    var featuredImage = {};
-    if (typeof ele['_links']['wp:featuredmedia'] != 'undefined') {
-      featuredImage = await getFeaturedImage(ele['_links']['wp:featuredmedia'][0].href); //fetch featured image URL
-      featuredImage = {
-        "url": featuredImage.guid.rendered,
-        "caption": featuredImage.caption.rendered
-      };
-    }
-
-    const slug_categories = await categoryIdsToSlugs(ele.categories);
-    ele.categories = slug_categories;
-
+  const resp = raw.map( (ele) => {
+    var article = sanitizeArticle(ele);
     if (preview) { //return only necessary fields if preview flag is enabled 
       return {
-        "id": ele.id,
-        "title": ele.title.rendered,
-        "link": ele.link,
-        "date": ele.modified,
-        "excerpt": ele.excerpt.rendered,
-        "author": author,
-        "featured-image": featuredImage,
-        "categories": ele.categories
+        "id": article.id,
+        "title": article.title,
+        "link": article.link,
+        "date": article.date,
+        "modified": article.modified,
+        "excerpt": article.excerpt.rendered,
+        "author": article.author,
+        "featured_image": article.featured_image,
+        "categories": article.categories
       }
-    } else { //return full response with author name and featured image URL
-      ele["author"] = author;
-      ele["featured-image"] = featuredImage;
-      delete ele["_links"];
-      return ele;
+    } else { //return full response
+      return article;
     }
   });
-  return Promise.all(promises);
+  return resp;
 }
 
-exports.getArticle = function (articleId) {
+exports.getArticle = async function (articleId) {
   articleId = articleId.trim();
-  url = all_posts_url + "?slug=" + articleId;
-  return fetch(url)
-    .then(data => data.json())
-    .then(resp => {
-      if (resp.length === 0){
-        return {
-          code: "article_not_found",
-          message: "Article ID not found.",
-          response_code: 404
-        };
-      }
-      else{
-        return resp[0];
-      }
-    });
+  url = all_posts_url + "slug=" + articleId;
+
+  const rawResp = await fetch(url);
+  const raw = await rawResp.json();
+  var article = raw[0];
+
+  return sanitizeArticle(article);
 }
 
 exports.getMenu = function (menuName) {
@@ -113,6 +89,41 @@ exports.getMenu = function (menuName) {
       response_code: 404
       
   }));
+}
+
+function sanitizeArticle(article) {
+  //replace numerical id with slug
+  article.id = article.slug;
+  delete article.slug;
+
+  article.title = article.title.rendered;
+
+   //retrieve author object 
+  article.author = article._embedded.author[0];
+  delete article.author._links; 
+
+  //extract featured image link and caption
+  if (typeof article._embedded["wp:featuredmedia"] != 'undefined'){
+    article.featured_image = {
+      url: article._embedded["wp:featuredmedia"][0].media_details.sizes.full.source_url,
+      caption: article._embedded["wp:featuredmedia"][0].caption.rendered
+    }
+  }
+
+  //retrieve categories and extract id, name and link
+  article.categories = article._embedded["wp:term"][0];
+  article.categories = article.categories.map(cat => { 
+  return { 
+    id: cat.slug,
+    name: cat.name,
+    link: cat.link
+  }});
+
+  //delete unnecessary fields
+  delete article.featured_media;
+  delete article._embedded;
+  delete article._links;
+  return article;
 }
 
 function replaceMenuUrl(menuItem){
