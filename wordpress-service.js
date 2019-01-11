@@ -91,6 +91,45 @@ exports.getMenu = function (menuName) {
   }));
 }
 
+exports.getCategory = async function (categoryName) {
+  categoryName = categoryName.trim();
+  var url = categories_url+"?slug="+categoryName;
+
+  try {
+    var rawResp = await(fetch(url));
+    var category = await(rawResp.json());
+    category = category[0];
+
+    //replace parent ID with slug
+    if (category.parent === 0){
+      category.parent = null;
+    }
+    else{
+      url = categories_url+"/"+category.parent;
+      rawResp = await(fetch(url));
+      const parentCategory = await(rawResp.json());
+      category.parent = parentCategory.slug;
+    }
+    return sanitizeCategory(category);  
+  }
+  catch (err) {
+    return {
+      code: "category_not_found",
+      message: "Invalid category ID.",
+      response_code: 404
+    };
+  }
+}
+
+function sanitizeCategory(category){
+  category.id = category.slug;
+
+  delete category.slug;
+  delete category._links;
+
+  return category;
+}
+
 function sanitizeArticle(article) {
   //replace numerical id with slug
   article.id = article.slug;
