@@ -65,6 +65,21 @@ app.get('/menu/:id', function (req, res){
     .then(data => typeof data.response_code === 'undefined' ? (res.send(data)) : (res.status(data.response_code), res.send(data)));
 });
 
+/**
+ * @api {get} /category/:categoryId Gets data for a category
+ * @apiName GetCategory
+ * @apiGroup Categories
+ * 
+ * @apiParam  {String} categoryId Unique category ID.
+ */
+app.get('/category/:id', function (req, res){
+  let category_id = req.params.id;
+
+  res.setHeader('Content-Type', 'application/json');
+  wp_api.getCategory(category_id)
+    .then(data => typeof data.response_code === 'undefined' ? (res.send(data)) : (res.status(data.response_code), res.send(data)));
+});
+
 
 app.get('/ads', function (req, res){
 
