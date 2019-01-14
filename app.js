@@ -82,10 +82,26 @@ app.get('/category/:id', function (req, res){
     .then(data => typeof data.response_code === 'undefined' ? (res.send(data)) : (res.status(data.response_code), res.send(data)));
 });
 
+/**
+ * @api {get} /author/:authorId Gets data for an author
+ * @apiName GetAuthor
+ * @apiGroup Authors
+ * 
+ * @apiParam  {String} authorId Unique author ID.
+ */
+app.get('/author/:id', function(req, res){
+  let author_id = req.params.id;
+
+  res.setHeader('Content-Type', 'application/json');
+  wp_api.getAuthor(author_id)
+  .then(data => typeof data.response_code === 'undefined' ? (res.send(data)) : (res.status(data.response_code), res.send(data)));
+});
+
 
 app.get('/ads', function (req, res){
 
 });
+
 
 
 // app.listen(process.env.PORT || 8080);
