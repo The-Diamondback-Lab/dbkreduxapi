@@ -4,8 +4,9 @@ const wp_url = "http://52.207.216.69";
 const all_posts_url = "http://52.207.216.69/wp-json/wp/v2/posts?_embed&";
 const menu_url = "http://52.207.216.69/wp-json/wp-api-menus/v2/menus/";
 const categories_url = "http://52.207.216.69/wp-json/wp/v2/categories";
+const users_url =  "http://52.207.216.69/wp-json/wp/v2/users";
 
-exports.getArticles = async function (limitArticles, page, category, prev) {
+exports.getArticles = async function (limitArticles, page, category, author, prev) {
   var url = all_posts_url;
   preview = false;
   if (typeof limitArticles != 'undefined') {
@@ -17,12 +18,25 @@ exports.getArticles = async function (limitArticles, page, category, prev) {
   if (typeof category != 'undefined') {
     try{
       categoryIds = await getCategoryId(category);
-      url += "categories=" + categoryIds;  
+      url += "categories=" + categoryIds + "&";  
     }
     catch (err) {
       return {
         code: "invalid_category_name",
-        message: "Invalid category name.",
+        message: `Invalid category name '${category}'.`,
+        response_code: 400
+      };
+    }
+  }
+  if (typeof author != 'undefined'){
+    try{
+      authorId = await getAuthorId(author);
+      url += "user=" + authorId;
+    }
+    catch (err) {
+      return {
+        code: "invalid_author_id",
+        message: `Invalid author ID '${author}'.`,
         response_code: 400
       };
     }
@@ -75,7 +89,7 @@ exports.getArticle = async function (articleId) {
   catch (err) {
     return {
     code: "article_not_found",
-    message: "Invalid article ID.",
+    message: `Invalid article ID '${articleId}'.`,
     response_code: 404
     };
   }
@@ -101,7 +115,7 @@ exports.getMenu = function (menuName) {
     })
     .catch(e => JSON.stringify({
       code: "menu_not_found",
-      message: "Invalid menu ID.",
+      message: `Invalid menu ID '${menuName}'.`,
       response_code: 404
       
   }));
@@ -131,7 +145,7 @@ exports.getCategory = async function (categoryName) {
   catch (err) {
     return {
       code: "category_not_found",
-      message: "Invalid category ID.",
+      message: `Invalid category ID '${categoryName}'.`,
       response_code: 404
     };
   }
@@ -178,6 +192,7 @@ function sanitizeArticle(article) {
   delete article.featured_media;
   delete article._embedded;
   delete article._links;
+  delete article.guid;
   return article;
 }
 
@@ -243,4 +258,14 @@ async function categoryIdsToSlugs(categoryIds) {
     return slug;
   });
   return Promise.all(slug_categories);
+}
+
+async function getAuthorId(slug) {
+  const req_url = users_url + "?slug="+slug;
+  const usersResp = await fetch(req_url);
+  const usersObj = await usersResp.json();
+  if (usersObj.length === 0){
+    throw Error('users object is empty');
+  }
+  return usersObj[0];
 }
