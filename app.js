@@ -17,19 +17,21 @@ app.get('/', function(req, res){
  * @apiGroup Articles
  *
  * @apiParam  {Boolean} preview Whether to retrieve full article data or just preview data.
- * @apiParam  {Number} [per_page]  The number of articles to retrieve per page.
+ * @apiParam  {Number} [per_page] The number of articles to retrieve per page.
  * @apiParam  {Number} [page] The page of articles to retrieve.
- * @apiParam  {Number} [category] The category ID (slug) from which to retrieve articles. 
+ * @apiParam  {String} [category] The category ID (slug) from which to retrieve articles. 
+ * @apiParam  {String} [author] The author ID (slug) from which to retrieve articles. 
  * 
  */
 app.get('/articles', function (req, res) {
   let articles = req.query.per_page;
   let page = req.query.page;
   let category = req.query.category;
+  let author = req.query.author;
   let preview = req.query.preview;
 
   res.setHeader('Content-Type', 'application/json');
-  wp_api.getArticles(articles, page, category, preview)
+  wp_api.getArticles(articles, page, category, author, preview)
     .then(data => typeof data.response_code === 'undefined' ? (res.send(data)) : (res.status(data.response_code), res.send(data)));
 });
 
