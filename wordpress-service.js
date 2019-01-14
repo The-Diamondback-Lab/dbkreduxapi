@@ -151,6 +151,26 @@ exports.getCategory = async function (categoryName) {
   }
 }
 
+exports.getAuthor = async function(authorName) {
+  authorName = authorName.trim();
+  var url = users_url+"?slug="+authorName;
+
+  try {
+    var rawResp = await(fetch(url));
+    var author = await(rawResp.json());
+    author = author[0];
+    delete author._links;
+    return author;
+  }
+  catch (err) {
+    return {
+      code: "author_not_found",
+      message: `Invalid author ID '${authorName}'.`,
+      response_code: 404
+    };
+  }
+}
+
 function sanitizeCategory(category){
   category.id = category.slug;
 
