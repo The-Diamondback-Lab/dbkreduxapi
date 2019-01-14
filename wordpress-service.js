@@ -16,14 +16,14 @@ exports.getArticles = async function (limitArticles, page, category, prev) {
   }
   if (typeof category != 'undefined') {
     try{
-      categoryId = await getCategoryId(category);
-      url += "categories=" + categoryId;  
+      categoryIds = await getCategoryId(category);
+      url += "categories=" + categoryIds;  
     }
     catch (err) {
       return {
         code: "invalid_category_name",
         message: "Invalid category name.",
-        response_code: 404
+        response_code: 400
       };
     }
   }
@@ -33,6 +33,14 @@ exports.getArticles = async function (limitArticles, page, category, prev) {
 
   const rawResp = await fetch(url);
   const raw = await rawResp.json();
+  
+  if (typeof raw.code != 'undefined' && raw.code === 'rest_post_invalid_page_number'){
+    return {
+      code: "invalid_page_number",
+      message: "Page number is out of range",
+      response_code: 400
+    };
+  }
   const resp = raw.map( (ele) => {
     var article = sanitizeArticle(ele);
     if (preview) { //return only necessary fields if preview flag is enabled 
@@ -58,11 +66,19 @@ exports.getArticle = async function (articleId) {
   articleId = articleId.trim();
   url = all_posts_url + "slug=" + articleId;
 
-  const rawResp = await fetch(url);
-  const raw = await rawResp.json();
-  var article = raw[0];
-
-  return sanitizeArticle(article);
+  try {
+    const rawResp = await fetch(url);
+    const raw = await rawResp.json();
+    var article = raw[0];
+    return sanitizeArticle(article);
+  }
+  catch (err) {
+    return {
+    code: "article_not_found",
+    message: "Invalid article ID.",
+    response_code: 404
+    };
+  }
 }
 
 exports.getMenu = function (menuName) {
@@ -192,11 +208,26 @@ async function getAuthorName(url) {
     };
 }
 
+/*
+  Based on a category slug, return all category IDs that are in that category's hiearchy
+*/
 async function getCategoryId(slug){
   const req_url = categories_url + "?slug="+slug;
   const categoryResp = await fetch(req_url);
   const categoryObj = await categoryResp.json();
-  return categoryObj[0].id;
+  var root = categoryObj[0].id;
+  var cats = [];
+  await getAllCategoryIds(root, cats);
+  return cats;
+}
+
+
+async function getAllCategoryIds(id, cats) {
+  cats.push(id);
+  const req_url = categories_url + "?parent="+id;
+  const categoryResp = await fetch(req_url);
+  const categoryObj = await categoryResp.json();
+  categoryObj.forEach(c => getAllCategoryIds(c.id, cats));
 }
 
 async function getCategorySlug(id){
