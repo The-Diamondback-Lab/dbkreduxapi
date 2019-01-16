@@ -4,7 +4,7 @@
   "description": "API to retrieve articles and other content from the DBK site.",
   "apidoc": {
     "name": "The Diamondback API",
-    "title": "DBK API",
+    "title": "API - The Diamondback",
     "url": "localhost:8080"
   },
   "main": "index.js",

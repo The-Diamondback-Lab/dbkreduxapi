@@ -21,7 +21,7 @@ app.get('/', function(req, res){
  * @apiParam  {Number} [page] The page of articles to retrieve.
  * @apiParam  {String} [category] The category ID (slug) from which to retrieve articles. 
  * @apiParam  {String} [author] The author ID (slug) from which to retrieve articles. 
- * @apiParam  {String} [search] The search term by which to query the articles.
+ * @apiParam  {String} [search] The search term to query articles by.
  * 
  */
 app.get('/articles', function (req, res) {
