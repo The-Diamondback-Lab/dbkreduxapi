@@ -6,7 +6,7 @@ const menu_url = "http://52.207.216.69/wp-json/wp-api-menus/v2/menus/";
 const categories_url = "http://52.207.216.69/wp-json/wp/v2/categories";
 const users_url =  "http://52.207.216.69/wp-json/wp/v2/users";
 
-exports.getArticles = async function (limitArticles, page, category, author, prev) {
+exports.getArticles = async function (limitArticles, page, category, author, search, prev) {
   var url = all_posts_url;
   preview = false;
   if (typeof limitArticles != 'undefined') {
@@ -31,7 +31,7 @@ exports.getArticles = async function (limitArticles, page, category, author, pre
   if (typeof author != 'undefined'){
     try{
       authorId = await getAuthorId(author);
-      url += "user=" + authorId;
+      url += "user=" + authorId + "&";
     }
     catch (err) {
       return {
@@ -40,6 +40,9 @@ exports.getArticles = async function (limitArticles, page, category, author, pre
         response_code: 400
       };
     }
+  }
+  if (typeof search != 'undefined') {
+    url += "search=" + search;
   }
   if (typeof prev != 'undefined') {
     preview = (prev === "true");
