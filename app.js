@@ -21,6 +21,7 @@ app.get('/', function(req, res){
  * @apiParam  {Number} [page] The page of articles to retrieve.
  * @apiParam  {String} [category] The category ID (slug) from which to retrieve articles. 
  * @apiParam  {String} [author] The author ID (slug) from which to retrieve articles. 
+ * @apiParam  {String} [search] The search term by which to query the articles.
  * 
  */
 app.get('/articles', function (req, res) {
@@ -28,10 +29,11 @@ app.get('/articles', function (req, res) {
   let page = req.query.page;
   let category = req.query.category;
   let author = req.query.author;
+  let search = req.query.search;
   let preview = req.query.preview;
 
   res.setHeader('Content-Type', 'application/json');
-  wp_api.getArticles(articles, page, category, author, preview)
+  wp_api.getArticles(articles, page, category, author, search, preview)
     .then(data => typeof data.response_code === 'undefined' ? (res.send(data)) : (res.status(data.response_code), res.send(data)));
 });
 
