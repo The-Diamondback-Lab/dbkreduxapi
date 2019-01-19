@@ -281,7 +281,7 @@ function sanitizePage(page) {
 }
 
 function sanitizeMenuUrls(menuItem){
-  menuItem = replaceUrl(menuItem);
+  menuItem.url = menuItem.url.replace(wp_url, "");
   if (menuItem.children){
     menuItem.children.forEach(child => { 
       if (menuItem.type !== 'custom'){
@@ -292,6 +292,9 @@ function sanitizeMenuUrls(menuItem){
 }
 
 function replaceUrl(input) {
+  if (!input.link){
+    return;
+  }
   input.link = input.link.replace(wp_url, "");
   return input;
 }
