@@ -5,17 +5,18 @@ const all_posts_url = "http://52.207.216.69/wp-json/wp/v2/posts?_embed&";
 const menu_url = "http://52.207.216.69/wp-json/wp-api-menus/v2/menus/";
 const categories_url = "http://52.207.216.69/wp-json/wp/v2/categories";
 const users_url =  "http://52.207.216.69/wp-json/wp/v2/users";
+const pages_url =  "http://52.207.216.69/wp-json/wp/v2/pages";
 
 exports.getArticles = async function (limitArticles, page, category, author, search, prev) {
   var url = all_posts_url;
   preview = false;
-  if (typeof limitArticles != 'undefined') {
+  if (typeof limitArticles !== 'undefined') {
     url += "per_page=" + limitArticles + "&";
   }
-  if (typeof page != 'undefined') {
+  if (typeof page !== 'undefined') {
     url += "page=" + page + "&";
   }
-  if (typeof category != 'undefined') {
+  if (typeof category !== 'undefined') {
     try{
       categoryIds = await getCategoryId(category);
       url += "categories=" + categoryIds + "&";  
@@ -28,7 +29,7 @@ exports.getArticles = async function (limitArticles, page, category, author, sea
       };
     }
   }
-  if (typeof author != 'undefined'){
+  if (typeof author !== 'undefined'){
     try{
       authorId = await getAuthorId(author);
       url += "user=" + authorId + "&";
@@ -41,7 +42,7 @@ exports.getArticles = async function (limitArticles, page, category, author, sea
       };
     }
   }
-  if (typeof search != 'undefined') {
+  if (typeof search !== 'undefined') {
     url += "search=" + search;
   }
   if (typeof prev != 'undefined') {
@@ -51,7 +52,7 @@ exports.getArticles = async function (limitArticles, page, category, author, sea
   const rawResp = await fetch(url);
   const raw = await rawResp.json();
   
-  if (typeof raw.code != 'undefined' && raw.code === 'rest_post_invalid_page_number'){
+  if (typeof raw.code !== 'undefined' && raw.code === 'rest_post_invalid_page_number'){
     return {
       code: "invalid_page_number",
       message: "Page number is out of range",
@@ -110,7 +111,7 @@ exports.getMenu = function (menuName) {
       menuObj.items.forEach(
         menuItem => {
           if (menuItem.type !== 'custom'){
-            replaceMenuUrl(menuItem);
+            sanitizeMenuUrls(menuItem);
           }
         }
       );
@@ -163,6 +164,7 @@ exports.getAuthor = async function(authorName) {
     var author = await(rawResp.json());
     author = author[0];
     delete author._links;
+    author = replaceUrl(author);
     return author;
   }
   catch (err) {
@@ -174,8 +176,46 @@ exports.getAuthor = async function(authorName) {
   }
 }
 
+exports.getPages = async function(search) {
+  if (typeof search === 'undefined'){
+    search = "";
+  }
+  var url = pages_url+"?search="+search;
+  try {
+    var rawResp = await(fetch(url));
+    var pages = await(rawResp.json());
+    pages = pages.map((page) => sanitizePage(page));
+    return pages;
+  }
+  catch (err){
+    return {
+      code: "pages_bad_request",
+      message: "Invalid request for pages.",
+      response_code: 400
+    };
+  }
+}
+
+exports.getPage = async function(pageName) {
+  var url = pages_url+"?slug="+pageName;
+  try{
+    var rawResp = await(fetch(url));
+    var pages = await(rawResp.json());
+    return sanitizePage(pages[0]); 
+  }
+  catch (err) {
+    return {
+      code: "page_not_found",
+      message: `Invalid page ID '${pageName}'.`,
+      response_code: 404
+    }
+  };
+}
+
 function sanitizeCategory(category){
   category.id = category.slug;
+
+  category = replaceUrl(category);
 
   delete category.slug;
   delete category._links;
@@ -192,6 +232,7 @@ function sanitizeArticle(article) {
 
    //retrieve author object 
   article.author = article._embedded.author[0];
+  article.author = replaceUrl(article.author);
   delete article.author._links; 
 
   //extract featured image link and caption
@@ -204,12 +245,17 @@ function sanitizeArticle(article) {
 
   //retrieve categories and extract id, name and link
   article.categories = article._embedded["wp:term"][0];
-  article.categories = article.categories.map(cat => { 
-  return { 
-    id: cat.slug,
-    name: cat.name,
-    link: cat.link
-  }});
+  article.categories = article.categories.map(cat => {
+    cat = replaceUrl(cat);
+    return { 
+      id: cat.slug,
+      name: cat.name,
+      link: cat.link
+    }
+  });
+
+  //replace link
+  article = replaceUrl(article);
 
   //delete unnecessary fields
   delete article.featured_media;
@@ -219,15 +265,35 @@ function sanitizeArticle(article) {
   return article;
 }
 
-function replaceMenuUrl(menuItem){
-  menuItem.url = menuItem.url.replace(wp_url, "");
+function sanitizePage(page) {
+  page.id = page.slug;
+  page.title = page.title.rendered;
+
+  page = replaceUrl(page);
+
+  //delete unnecessary fields
+  delete page.featured_media;
+  delete page._embedded;
+  delete page._links;
+  delete page.guid;
+
+  return page;
+}
+
+function sanitizeMenuUrls(menuItem){
+  menuItem = replaceUrl(menuItem);
   if (menuItem.children){
     menuItem.children.forEach(child => { 
       if (menuItem.type !== 'custom'){
-        replaceMenuUrl(child);
+        sanitizeMenuUrls(child);
       }
     });
   }
+}
+
+function replaceUrl(input) {
+  input.link = input.link.replace(wp_url, "");
+  return input;
 }
 
 async function getFeaturedImage(url) {

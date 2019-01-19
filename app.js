@@ -24,7 +24,7 @@ app.get('/', function(req, res){
  * @apiParam  {String} [search] The search term to query articles by.
  * 
  */
-app.get('/articles', function (req, res) {
+app.get('/articles', function (req, res){
   let articles = req.query.per_page;
   let page = req.query.page;
   let category = req.query.category;
@@ -99,6 +99,36 @@ app.get('/author/:id', function(req, res){
   .then(data => typeof data.response_code === 'undefined' ? (res.send(data)) : (res.status(data.response_code), res.send(data)));
 });
 
+/**
+ * @api {get} /pages Gets a list of DBK pages
+ * @apiName GetPages
+ * @apiGroup Pages
+ *
+ * @apiParam  {String} [search] The search term to query pages by.
+ * 
+ */
+app.get('/pages', function(req, res){
+  let search = req.query.search;
+
+  res.setHeader('Content-Type', 'application/json');
+  wp_api.getPages(search)
+  .then(data => typeof data.response_code === 'undefined' ? (res.send(data)) : (res.status(data.response_code), res.send(data)));
+});
+
+/**
+ * @api {get} /pages/:pageId Gets data for a page
+ * @apiName GetPage
+ * @apiGroup Pages
+ * 
+ * @apiParam  {String} pageId Unique page ID.
+ */
+app.get('/pages/:pageId', function(req, res){
+  let pageId = req.params.pageId;
+
+  res.setHeader('Content-Type', 'application/json');
+  wp_api.getPage(pageId)
+  .then(data => typeof data.response_code === 'undefined' ? (res.send(data)) : (res.status(data.response_code), res.send(data)));
+});
 
 app.get('/ads', function (req, res){
 
