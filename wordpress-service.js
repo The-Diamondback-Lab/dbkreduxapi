@@ -4,8 +4,8 @@ const wp_url = "http://52.207.216.69";
 const all_posts_url = "http://52.207.216.69/wp-json/wp/v2/posts?_embed&";
 const menu_url = "http://52.207.216.69/wp-json/wp-api-menus/v2/menus/";
 const categories_url = "http://52.207.216.69/wp-json/wp/v2/categories";
-const users_url =  "http://52.207.216.69/wp-json/wp/v2/users";
-const pages_url =  "http://52.207.216.69/wp-json/wp/v2/pages";
+const users_url = "http://52.207.216.69/wp-json/wp/v2/users";
+const pages_url = "http://52.207.216.69/wp-json/wp/v2/pages";
 
 exports.getArticles = async function (limitArticles, page, category, author, search, prev) {
   var url = all_posts_url;
@@ -17,11 +17,10 @@ exports.getArticles = async function (limitArticles, page, category, author, sea
     url += "page=" + page + "&";
   }
   if (typeof category !== 'undefined') {
-    try{
+    try {
       categoryIds = await getCategoryId(category);
-      url += "categories=" + categoryIds + "&";  
-    }
-    catch (err) {
+      url += "categories=" + categoryIds + "&";
+    } catch (err) {
       return {
         code: "invalid_category_name",
         message: `Invalid category name '${category}'.`,
@@ -29,12 +28,11 @@ exports.getArticles = async function (limitArticles, page, category, author, sea
       };
     }
   }
-  if (typeof author !== 'undefined'){
-    try{
+  if (typeof author !== 'undefined') {
+    try {
       authorId = await getAuthorId(author);
       url += "user=" + authorId + "&";
-    }
-    catch (err) {
+    } catch (err) {
       return {
         code: "invalid_author_id",
         message: `Invalid author ID '${author}'.`,
@@ -51,15 +49,15 @@ exports.getArticles = async function (limitArticles, page, category, author, sea
 
   const rawResp = await fetch(url);
   const raw = await rawResp.json();
-  
-  if (typeof raw.code !== 'undefined' && raw.code === 'rest_post_invalid_page_number'){
+
+  if (typeof raw.code !== 'undefined' && raw.code === 'rest_post_invalid_page_number') {
     return {
       code: "invalid_page_number",
       message: "Page number is out of range",
       response_code: 400
     };
   }
-  const resp = raw.map( (ele) => {
+  const resp = raw.map((ele) => {
     var article = sanitizeArticle(ele);
     if (preview) { //return only necessary fields if preview flag is enabled 
       return {
@@ -89,12 +87,11 @@ exports.getArticle = async function (articleId) {
     const raw = await rawResp.json();
     var article = raw[0];
     return sanitizeArticle(article);
-  }
-  catch (err) {
+  } catch (err) {
     return {
-    code: "article_not_found",
-    message: `Invalid article ID '${articleId}'.`,
-    response_code: 404
+      code: "article_not_found",
+      message: `Invalid article ID '${articleId}'.`,
+      response_code: 404
     };
   }
 }
@@ -110,7 +107,7 @@ exports.getMenu = function (menuName) {
     .then(menuObj => {
       menuObj.items.forEach(
         menuItem => {
-          if (menuItem.type !== 'custom'){
+          if (menuItem.type !== 'custom') {
             sanitizeMenuUrls(menuItem);
           }
         }
@@ -121,32 +118,30 @@ exports.getMenu = function (menuName) {
       code: "menu_not_found",
       message: `Invalid menu ID '${menuName}'.`,
       response_code: 404
-      
-  }));
+
+    }));
 }
 
 exports.getCategory = async function (categoryName) {
   categoryName = categoryName.trim();
-  var url = categories_url+"?slug="+categoryName;
+  var url = categories_url + "?slug=" + categoryName;
 
   try {
-    var rawResp = await(fetch(url));
-    var category = await(rawResp.json());
+    var rawResp = await (fetch(url));
+    var category = await (rawResp.json());
     category = category[0];
 
     //replace parent ID with slug
-    if (category.parent === 0){
+    if (category.parent === 0) {
       category.parent = null;
-    }
-    else{
-      url = categories_url+"/"+category.parent;
-      rawResp = await(fetch(url));
-      const parentCategory = await(rawResp.json());
+    } else {
+      url = categories_url + "/" + category.parent;
+      rawResp = await (fetch(url));
+      const parentCategory = await (rawResp.json());
       category.parent = parentCategory.slug;
     }
-    return sanitizeCategory(category);  
-  }
-  catch (err) {
+    return sanitizeCategory(category);
+  } catch (err) {
     return {
       code: "category_not_found",
       message: `Invalid category ID '${categoryName}'.`,
@@ -155,19 +150,18 @@ exports.getCategory = async function (categoryName) {
   }
 }
 
-exports.getAuthor = async function(authorName) {
+exports.getAuthor = async function (authorName) {
   authorName = authorName.trim();
-  var url = users_url+"?slug="+authorName;
+  var url = users_url + "?slug=" + authorName;
 
   try {
-    var rawResp = await(fetch(url));
-    var author = await(rawResp.json());
+    var rawResp = await (fetch(url));
+    var author = await (rawResp.json());
     author = author[0];
     delete author._links;
     author = replaceUrl(author);
     return author;
-  }
-  catch (err) {
+  } catch (err) {
     return {
       code: "author_not_found",
       message: `Invalid author ID '${authorName}'.`,
@@ -176,18 +170,17 @@ exports.getAuthor = async function(authorName) {
   }
 }
 
-exports.getPages = async function(search) {
-  if (typeof search === 'undefined'){
+exports.getPages = async function (search) {
+  if (typeof search === 'undefined') {
     search = "";
   }
-  var url = pages_url+"?search="+search;
+  var url = pages_url + "?search=" + search;
   try {
-    var rawResp = await(fetch(url));
-    var pages = await(rawResp.json());
+    var rawResp = await (fetch(url));
+    var pages = await (rawResp.json());
     pages = pages.map((page) => sanitizePage(page));
     return pages;
-  }
-  catch (err){
+  } catch (err) {
     return {
       code: "pages_bad_request",
       message: "Invalid request for pages.",
@@ -196,14 +189,13 @@ exports.getPages = async function(search) {
   }
 }
 
-exports.getPage = async function(pageName) {
-  var url = pages_url+"?slug="+pageName;
-  try{
-    var rawResp = await(fetch(url));
-    var pages = await(rawResp.json());
-    return sanitizePage(pages[0]); 
-  }
-  catch (err) {
+exports.getPage = async function (pageName) {
+  var url = pages_url + "?slug=" + pageName;
+  try {
+    var rawResp = await (fetch(url));
+    var pages = await (rawResp.json());
+    return sanitizePage(pages[0]);
+  } catch (err) {
     return {
       code: "page_not_found",
       message: `Invalid page ID '${pageName}'.`,
@@ -212,7 +204,7 @@ exports.getPage = async function(pageName) {
   };
 }
 
-function sanitizeCategory(category){
+function sanitizeCategory(category) {
   category.id = category.slug;
 
   category = replaceUrl(category);
@@ -230,24 +222,27 @@ function sanitizeArticle(article) {
 
   article.title = article.title.rendered;
 
-   //retrieve author object 
+  //retrieve author object 
   article.author = article._embedded.author[0];
   article.author = replaceUrl(article.author);
-  delete article.author._links; 
+  delete article.author._links;
 
   //extract featured image link and caption
-  if (typeof article._embedded["wp:featuredmedia"] != 'undefined'){
+  if (typeof article._embedded["wp:featuredmedia"] != 'undefined') {
+    let sizes = article._embedded["wp:featuredmedia"][0].media_details.sizes;
     article.featured_image = {
-      url: article._embedded["wp:featuredmedia"][0].media_details.sizes.full.source_url,
-      caption: article._embedded["wp:featuredmedia"][0].caption.rendered
-    }
+      url: sizes.full.source_url,
+      caption: article._embedded["wp:featuredmedia"][0].caption.rendered,
+      article: (sizes.large ? sizes.large.source_url : sizes.full.source_url),
+      preview: (sizes.medium ? sizes.medium.source_url : sizes.full.source_url)
+    };
   }
 
   //retrieve categories and extract id, name and link
   article.categories = article._embedded["wp:term"][0];
   article.categories = article.categories.map(cat => {
     cat = replaceUrl(cat);
-    return { 
+    return {
       id: cat.slug,
       name: cat.name,
       link: cat.link
@@ -280,11 +275,11 @@ function sanitizePage(page) {
   return page;
 }
 
-function sanitizeMenuUrls(menuItem){
+function sanitizeMenuUrls(menuItem) {
   menuItem.url = menuItem.url.replace(wp_url, "");
-  if (menuItem.children){
-    menuItem.children.forEach(child => { 
-      if (menuItem.type !== 'custom'){
+  if (menuItem.children) {
+    menuItem.children.forEach(child => {
+      if (menuItem.type !== 'custom') {
         sanitizeMenuUrls(child);
       }
     });
@@ -292,7 +287,7 @@ function sanitizeMenuUrls(menuItem){
 }
 
 function replaceUrl(input) {
-  if (!input.link){
+  if (!input.link) {
     return;
   }
   input.link = input.link.replace(wp_url, "");
@@ -312,14 +307,14 @@ async function getAuthorName(url) {
     "id": author.id,
     "name": author.name,
     "link": author.link
-    };
+  };
 }
 
 /*
   Based on a category slug, return all category IDs that are in that category's hiearchy
 */
-async function getCategoryId(slug){
-  const req_url = categories_url + "?slug="+slug;
+async function getCategoryId(slug) {
+  const req_url = categories_url + "?slug=" + slug;
   const categoryResp = await fetch(req_url);
   const categoryObj = await categoryResp.json();
   var root = categoryObj[0].id;
@@ -331,14 +326,14 @@ async function getCategoryId(slug){
 
 async function getAllCategoryIds(id, cats) {
   cats.push(id);
-  const req_url = categories_url + "?parent="+id;
+  const req_url = categories_url + "?parent=" + id;
   const categoryResp = await fetch(req_url);
   const categoryObj = await categoryResp.json();
   categoryObj.forEach(c => getAllCategoryIds(c.id, cats));
 }
 
-async function getCategorySlug(id){
-  const req_url = categories_url + "/"+id;
+async function getCategorySlug(id) {
+  const req_url = categories_url + "/" + id;
   const categoryResp = await fetch(req_url);
   const categoryObj = await categoryResp.json();
   return categoryObj.slug;
@@ -353,10 +348,10 @@ async function categoryIdsToSlugs(categoryIds) {
 }
 
 async function getAuthorId(slug) {
-  const req_url = users_url + "?slug="+slug;
+  const req_url = users_url + "?slug=" + slug;
   const usersResp = await fetch(req_url);
   const usersObj = await usersResp.json();
-  if (usersObj.length === 0){
+  if (usersObj.length === 0) {
     throw Error('users object is empty');
   }
   return usersObj[0];
