@@ -55,6 +55,18 @@ app.get('/articles/:articleId', function(req, res){
 
 
 /**
+ * @api {get} /featured_article Gets the current homepage featured article
+ * @apiName GetFeaturedArticle
+ * @apiGroup Articles
+ */
+app.get('/featured_article', function(req, res){
+  res.setHeader('Content-Type', 'application/json');
+  wp_api.getFeaturedArticle()
+    .then(data => typeof data.response_code === 'undefined' ? (res.send(data)) : (res.status(data.response_code), res.send(data)));
+});
+
+
+/**
  * @api {get} /menu/:menuId Gets data for a menu
  * @apiName GetMenu
  * @apiGroup Menu
