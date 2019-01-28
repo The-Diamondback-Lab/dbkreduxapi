@@ -30,7 +30,7 @@ exports.getArticles = async function (limitArticles, page, category, author, sea
   if (typeof author !== 'undefined') {
     try {
       authorId = await getAuthorId(author);
-      url += "user=" + authorId + "&";
+      url += "author=" + authorId + "&";
     } catch (err) {
       return error("invalid_author_id", `Invalid author ID '${author}'.`, 400);
     }
@@ -344,5 +344,5 @@ async function getAuthorId(slug) {
   if (usersObj.length === 0) {
     throw Error('users object is empty');
   }
-  return usersObj[0];
+  return usersObj[0].id;
 }
