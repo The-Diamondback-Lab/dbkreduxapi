@@ -1,12 +1,13 @@
 const fetch = require('node-fetch');
 
-const wp_url = "http://52.207.216.69";
-const all_posts_url = "http://52.207.216.69/wp-json/wp/v2/posts?_embed&";
-const featured_post_url = "http://52.207.216.69/wp-json/wp/v2/posts?featured-story=1&per_page=1&_embed";
-const menu_url = "http://52.207.216.69/wp-json/wp-api-menus/v2/menus";
-const categories_url = "http://52.207.216.69/wp-json/wp/v2/categories";
-const users_url = "http://52.207.216.69/wp-json/wp/v2/users";
-const pages_url = "http://52.207.216.69/wp-json/wp/v2/pages";
+const wp_url = "http://54.196.232.70";
+
+const all_posts_url = `${wp_url}/wp-json/wp/v2/posts?_embed&`;
+const featured_post_url = `${wp_url}/wp-json/wp/v2/posts?featured-story=1&per_page=1&_embed`;
+const menu_url = `${wp_url}/wp-json/wp-api-menus/v2/menus`;
+const categories_url = `${wp_url}/wp-json/wp/v2/categories`;
+const users_url = `${wp_url}/wp-json/wp/v2/users`;
+const pages_url = `${wp_url}/wp-json/wp/v2/pages`;
 
 /** FUNCTIONS USED BY APP.JS **/
 
@@ -57,7 +58,7 @@ exports.getArticles = async function (limitArticles, page, category, author, sea
         "date": article.date,
         "modified": article.modified,
         "excerpt": article.excerpt.rendered,
-        "author": article.author,
+        "authors": article.authors,
         "featured_image": article.featured_image,
         "categories": article.categories
       }
@@ -218,9 +219,9 @@ function sanitizeArticle(article) {
   article.title = article.title.rendered;
 
   //retrieve author object 
-  article.author = article._embedded.author[0];
-  article.author = replaceUrl(article.author);
-  delete article.author._links;
+  article.authors = article.coauthors;
+  delete article.author;
+  delete article.coauthors;
 
   //extract featured image link and caption
   if (typeof article._embedded["wp:featuredmedia"] != 'undefined') {
