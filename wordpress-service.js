@@ -93,7 +93,7 @@ exports.getFeaturedArticle = async function () {
       "date": article.date,
       "modified": article.modified,
       "excerpt": article.excerpt.rendered,
-      "author": article.author,
+      "authors": article.authors,
       "featured_image": article.featured_image,
       "categories": article.categories
     };

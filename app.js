@@ -5,11 +5,11 @@ const cors = require('cors');
 const sls = require('serverless-http')
 
 app.use(cors({credentials: true, origin: true}));
-// app.use('/', express.static(__dirname + '/doc'));
+app.use('/', express.static(__dirname + '/doc'));
 
-// app.get('/', function(req, res){
-//   res.sendFile( __dirname + "/doc/index.html");
-// });
+app.get('/', function(req, res){
+  res.sendFile( __dirname + "/doc/index.html");
+});
 
 
 /**
