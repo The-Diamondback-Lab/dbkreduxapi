@@ -10,5 +10,5 @@
         { "src": "/", "dest": "doc/index.html"},
         { "src": "/(.*)", "dest": "app.js" }
     ],
-    "alias": "dbk-api.now.sh"
+    "alias": "dbk-api-production.now.sh"
 }
