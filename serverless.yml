@@ -5,7 +5,7 @@ service: dbk-api
 provider:
   name: aws
   runtime: nodejs8.10
-  stage: prod
+  stage: v0
   region: us-east-1
 
 functions:

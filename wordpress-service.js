@@ -58,7 +58,7 @@ exports.getArticles = async function (limitArticles, page, category, author, sea
         "date": article.date,
         "modified": article.modified,
         "excerpt": article.excerpt.rendered,
-        "authors": article.authors,
+        "author": article.author,
         "featured_image": article.featured_image,
         "categories": article.categories
       }
@@ -93,7 +93,7 @@ exports.getFeaturedArticle = async function () {
       "date": article.date,
       "modified": article.modified,
       "excerpt": article.excerpt.rendered,
-      "authors": article.authors,
+      "author": article.author,
       "featured_image": article.featured_image,
       "categories": article.categories
     };
@@ -219,9 +219,9 @@ function sanitizeArticle(article) {
   article.title = article.title.rendered;
 
   //retrieve author object 
-  article.authors = article.coauthors;
-  delete article.author;
-  delete article.coauthors;
+  article.author = article._embedded.author[0];
+  article.author = replaceUrl(article.author);
+  delete article.author._links;
 
   //extract featured image link and caption
   if (typeof article._embedded["wp:featuredmedia"] != 'undefined') {
