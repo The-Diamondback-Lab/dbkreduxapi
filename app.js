@@ -2,13 +2,14 @@ const express = require('express');
 const app = express();
 const wp_api = require('./wordpress-service.js');
 const cors = require('cors');
+const sls = require('serverless-http')
 
 app.use(cors({credentials: true, origin: true}));
-app.use('/', express.static(__dirname + '/doc'));
+// app.use('/', express.static(__dirname + '/doc'));
 
-app.get('/', function(req, res){
-  res.sendFile( __dirname + "/doc/index.html");
-});
+// app.get('/', function(req, res){
+//   res.sendFile( __dirname + "/doc/index.html");
+// });
 
 
 /**
@@ -150,3 +151,5 @@ app.get('/ads', function (req, res){
 
 // app.listen(process.env.PORT || 8080);
 module.exports = app;
+// module.exports.server = sls(app);
+
