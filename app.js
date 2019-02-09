@@ -150,6 +150,6 @@ app.get('/ads', function (req, res){
 
 
 // app.listen(process.env.PORT || 8080);
-module.exports = app;
-// module.exports.server = sls(app);
+// module.exports = app;
+module.exports.server = sls(app);
 
