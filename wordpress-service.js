@@ -11,7 +11,7 @@ const pages_url = `${wp_url}/wp-json/wp/v2/pages`;
 
 /** FUNCTIONS USED BY APP.JS **/
 
-exports.getArticles = async function (limitArticles, page, category, author, search, prev) {
+exports.getArticles = async function (limitArticles, page, category, author, search, prev, order, orderby) {
   var url = all_posts_url;
   preview = false;
   if (typeof limitArticles !== 'undefined') {
@@ -37,7 +37,13 @@ exports.getArticles = async function (limitArticles, page, category, author, sea
     }
   }
   if (typeof search !== 'undefined') {
-    url += "search=" + search;
+    url += "search=" + search + "&";
+  }
+  if (typeof order !== 'undefined') {
+    url += "order=" + order + "&";
+  }
+  if (typeof orderby != 'undefined') {
+    url += "orderby=" + orderby
   }
   if (typeof prev != 'undefined') {
     preview = (prev === "true");
