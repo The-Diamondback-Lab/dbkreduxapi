@@ -23,6 +23,9 @@ app.get('/', function(req, res){
  * @apiParam  {String} [category] The category ID (slug) from which to retrieve articles. 
  * @apiParam  {String} [author] The author ID (slug) from which to retrieve articles. 
  * @apiParam  {String} [search] The search term to query articles by.
+ * @apiParam  {String} [order] Order of the results. [author, date, modified, relevance, title]
+ * @apiParam  {String} [orderby] How to order the results. [asc, desc]
+
  * 
  */
 app.get('/articles', function (req, res){
@@ -32,9 +35,11 @@ app.get('/articles', function (req, res){
   let author = req.query.author;
   let search = req.query.search;
   let preview = req.query.preview;
+  let order = req.query.order;
+  let orderby = req.query.orderby;
 
   res.setHeader('Content-Type', 'application/json');
-  wp_api.getArticles(articles, page, category, author, search, preview)
+  wp_api.getArticles(articles, page, category, author, search, preview, order, orderby)
     .then(data => typeof data.response_code === 'undefined' ? (res.send(data)) : (res.status(data.response_code), res.send(data)));
 });
 
