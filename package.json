@@ -11,7 +11,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "apidoc -e node_modules/ | node app.local.js",
-    "now-build": "apidoc -e node_modules/"
+    "now-build": "npm install -g apidoc | apidoc -e node_modules/"
   },
   "repository": {
     "type": "git",
