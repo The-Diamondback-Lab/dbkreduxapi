@@ -3,7 +3,7 @@
     "name": "dbk-api",
     "builds": [
         { "src": "app.js", "use": "@now/node" },
-        { "src": "package.json", "use": "@now/static-build", "config": { "distDir": "doc" } }
+        { "src": "!app.js", "use": "@now/static"}
     ],
     "routes": [
         { "src": "/", "dest": "doc/index.html"},
@@ -19,7 +19,7 @@
         { "src": "/api_project.js", "dest": "doc/api_project.js"},
         { "src": "/api_project.json", "dest": "doc/api_project.json"},
 
-
+        
         { "src": "/(.*)", "dest": "app.js" }
     ]
 }
