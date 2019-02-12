@@ -10,7 +10,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "apidoc -e node_modules/ | node app.local.js"
+    "start": "apidoc -e node_modules/ | node app.local.js",
+    "now-build": "apidoc -e node_modules/"
   },
   "repository": {
     "type": "git",
