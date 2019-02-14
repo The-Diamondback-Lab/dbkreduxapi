@@ -158,6 +158,9 @@ exports.getAuthor = async function (authorName) {
   try {
     var author = await request(url);
     author = author[0];
+    if (author.user_twitter) {
+      author.user_twitter = author.user_twitter.replace('@', '');
+    }
     delete author._links;
     author = replaceUrl(author);
     return author;
@@ -227,6 +230,10 @@ function sanitizeArticle(article) {
   //retrieve author object 
   article.author = article._embedded.author[0];
   article.author = replaceUrl(article.author);
+  if (article.author.user_twitter){
+    article.author.user_twitter = article.author.user_twitter.trim();
+    article.author.user_twitter = article.author.user_twitter.replace('@', '');
+  }
   delete article.author._links;
 
   //extract featured image link and caption
