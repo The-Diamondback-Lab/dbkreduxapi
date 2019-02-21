@@ -67,7 +67,7 @@ app.get('/articles/:articleId', cache('5 minutes'), function(req, res){
  * @apiName GetFeaturedArticle
  * @apiGroup Articles
  */
-app.get('/featured_article', cache('5 minutes'), function(req, res){
+app.get('/featured_article', cache('1 minute'), function(req, res){
   res.setHeader('Content-Type', 'application/json');
   wp_api.getFeaturedArticle()
     .then(data => typeof data.response_code === 'undefined' ? (res.send(data)) : (res.status(data.response_code), res.send(data)));
