@@ -3,6 +3,8 @@ const app = express();
 const wp_api = require('./wordpress-service.js');
 const cors = require('cors');
 const sls = require('serverless-http')
+const apicache = require('apicache');
+const cache = apicache.middleware;
 
 app.use(cors({credentials: true, origin: true}));
 // app.use('/', express.static(__dirname + '/doc'));
@@ -28,7 +30,7 @@ app.use(cors({credentials: true, origin: true}));
 
  * 
  */
-app.get('/articles', function (req, res){
+app.get('/articles', cache('5 minutes'), function (req, res){
   let articles = req.query.per_page;
   let page = req.query.page;
   let category = req.query.category;
@@ -51,7 +53,7 @@ app.get('/articles', function (req, res){
  *
  * @apiParam  {String} articleId Unique article ID (slug).
  */
-app.get('/articles/:articleId', function(req, res){
+app.get('/articles/:articleId', cache('5 minutes'), function(req, res){
   let articleId = req.params.articleId;
 
   res.setHeader('Content-Type', 'application/json');
@@ -65,7 +67,7 @@ app.get('/articles/:articleId', function(req, res){
  * @apiName GetFeaturedArticle
  * @apiGroup Articles
  */
-app.get('/featured_article', function(req, res){
+app.get('/featured_article', cache('5 minutes'), function(req, res){
   res.setHeader('Content-Type', 'application/json');
   wp_api.getFeaturedArticle()
     .then(data => typeof data.response_code === 'undefined' ? (res.send(data)) : (res.status(data.response_code), res.send(data)));
@@ -79,7 +81,7 @@ app.get('/featured_article', function(req, res){
  *
  * @apiParam  {String} menuId Unique menu ID.
  */
-app.get('/menu/:id', function (req, res){
+app.get('/menu/:id', cache('5 minutes'), function (req, res){
   let menu_id = req.params.id;
 
   res.setHeader('Content-Type', 'application/json');
@@ -94,7 +96,7 @@ app.get('/menu/:id', function (req, res){
  * 
  * @apiParam  {String} categoryId Unique category ID.
  */
-app.get('/category/:id', function (req, res){
+app.get('/category/:id', cache('5 minutes'), function (req, res){
   let category_id = req.params.id;
 
   res.setHeader('Content-Type', 'application/json');
@@ -109,7 +111,7 @@ app.get('/category/:id', function (req, res){
  * 
  * @apiParam  {String} authorId Unique author ID.
  */
-app.get('/author/:id', function(req, res){
+app.get('/author/:id', cache('5 minutes'), function(req, res){
   let author_id = req.params.id;
 
   res.setHeader('Content-Type', 'application/json');
@@ -125,7 +127,7 @@ app.get('/author/:id', function(req, res){
  * @apiParam  {String} [search] The search term to query pages by.
  * 
  */
-app.get('/pages', function(req, res){
+app.get('/pages', cache('5 minutes'), function(req, res){
   let search = req.query.search;
 
   res.setHeader('Content-Type', 'application/json');
@@ -140,7 +142,7 @@ app.get('/pages', function(req, res){
  * 
  * @apiParam  {String} pageId Unique page ID.
  */
-app.get('/pages/:pageId', function(req, res){
+app.get('/pages/:pageId', cache('5 minutes'), function(req, res){
   let pageId = req.params.pageId;
 
   res.setHeader('Content-Type', 'application/json');
