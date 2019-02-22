@@ -6,7 +6,7 @@ const sls = require('serverless-http')
 const apicache = require('apicache');
 const cache = apicache.middleware;
 
-app.use(cors({credentials: true, origin: true}));
+app.use(cors());
 // app.use('/', express.static(__dirname + '/doc'));
 
 // app.get('/', function(req, res){
@@ -53,7 +53,7 @@ app.get('/articles', cache('5 minutes'), function (req, res){
  *
  * @apiParam  {String} articleId Unique article ID (slug).
  */
-app.get('/articles/:articleId', cache('5 minutes'), function(req, res){
+app.get('/articles/:articleId', function(req, res){
   let articleId = req.params.articleId;
 
   res.setHeader('Content-Type', 'application/json');
@@ -142,7 +142,7 @@ app.get('/pages', cache('5 minutes'), function(req, res){
  * 
  * @apiParam  {String} pageId Unique page ID.
  */
-app.get('/pages/:pageId', cache('5 minutes'), function(req, res){
+app.get('/pages/:pageId', function(req, res){
   let pageId = req.params.pageId;
 
   res.setHeader('Content-Type', 'application/json');
