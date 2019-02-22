@@ -10,9 +10,6 @@ const categories_url = `${wp_url}/wp-json/wp/v2/categories`;
 const users_url = `${wp_url}/wp-json/wp/v2/users`;
 const pages_url = `${wp_url}/wp-json/wp/v2/pages`;
 
-const s3_url = "https://dbk-wordpress.s3.amazonaws.com"
-const cdn_url = "https://d3gx1wgrn4cpnk.cloudfront.net"
-
 /** FUNCTIONS USED BY APP.JS **/
 
 exports.getArticles = async function (limitArticles, page, category, author, search, prev, order, orderby) {
@@ -244,10 +241,10 @@ function sanitizeArticle(article) {
   if (typeof article._embedded["wp:featuredmedia"] != 'undefined') {
     let sizes = article._embedded["wp:featuredmedia"][0].media_details.sizes;
     article.featured_image = {
-      url: s3ToCDN(sizes.full.source_url),
+      url: sizes.full.source_url,
       caption: article._embedded["wp:featuredmedia"][0].caption.rendered,
-      article: (sizes.large ? s3ToCDN(sizes.large.source_url) : s3ToCDN(sizes.full.source_url)),
-      preview: (sizes.medium ? s3ToCDN(sizes.medium.source_url) : s3ToCDN(sizes.full.source_url))
+      article: (sizes.large ? sizes.large.source_url : sizes.full.source_url),
+      preview: (sizes.medium ? sizes.medium.source_url : sizes.full.source_url)
     };
   }
 
@@ -305,11 +302,6 @@ function replaceUrl(input) {
   }
   input.link = input.link.replace(replace_wp_url, "");
   return input;
-}
-
-function s3ToCDN(url) {
-  let cdn = url.replace(s3_url, cdn_url);
-  return cdn;
 }
 
 async function getFeaturedImage(url) {
