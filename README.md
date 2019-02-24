@@ -34,7 +34,7 @@ Open a new terminal tab and run `npm start`. This will run the server locally on
 
 ## Deployment
 
-The API is deployed to Zeit's [Now](https://http://zeit.co/now). Once you get set up with an account, you must be added to The Diamondback Lab team. Once you do that, deployment is simple:
+The API is deployed to Zeit's [Now](https://zeit.co/now). Once you get set up with an account, you must be added to The Diamondback Lab team. Once you do that, deployment is simple:
 
 1. Install the Now CLI: https://github.com/zeit/now-cli
 
