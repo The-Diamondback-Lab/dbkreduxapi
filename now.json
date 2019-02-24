@@ -15,5 +15,9 @@
         { "src": "/pages", "dest": "app.js"},
         { "src": "/pages/(.*)", "dest": "app.js"},
         { "src": "/(.*)", "dest": "doc/$1"}
-    ]
+    ],
+    "env": {
+        "REDISPWD": "@redispwd"
+    }
+      
 }

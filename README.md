@@ -40,7 +40,7 @@ The API is deployed to Zeit's [Now](https://zeit.co/now). Once you get set up wi
 
 2. Once you authenticate, switch from your account to the team's account by running `now switch` and choosing the team.
 
-3. To deploy, run `now -e REDISPWD=@redispwd`. Now will grab all necessary deployment information from the included `now.json`. It will also use the stored secret variable (`redispwd`) as an environment variable in deployment. More on that: https://zeit.co/blog/environment-variables-secrets.
+3. To deploy, simply run `now`. Now will grab all necessary deployment information from the included `now.json`. It will automatically use the stored secret variable (`redispwd`) as an environment variable in deployment, as specified in `now.json`. More on that: https://zeit.co/blog/environment-variables-secrets.
 
 4. If the deployment looks good, you can alias it to the production URL. To do this, run `now alias api.dbknews.com`. 
 
