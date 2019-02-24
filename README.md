@@ -32,9 +32,17 @@ Follow the steps below to get your development enviroment set up.
 
 Open a new terminal tab and run `npm start`. This will run the server locally on your machine, which can be accessed at http://localhost:8080.
 
-## Documentation
+## Deployment
 
-More detailed documentation on the API can be found in the /doc folder.
+The API is deployed to Zeit's [Now](https://http://zeit.co/now). Once you get set up with an account, you must be added to The Diamondback Lab team. Once you do that, deployment is simple:
+
+1. Install the Now CLI: https://github.com/zeit/now-cli
+
+2. Once you authenticate, switch from your account to the team's account by running `now switch` and choosing the team.
+
+3. To deploy, run `now -e REDISPWD=@redispwd`. Now will grab all necessary deployment information from the included `now.json`. It will also use the stored secret variable (`redispwd`) as an environment variable in deployment. More on that: https://zeit.co/blog/environment-variables-secrets.
+
+4. If the deployment looks good, you can alias it to the production URL. To do this, run `now alias api.dbknews.com`. 
 
 ## Built With
 

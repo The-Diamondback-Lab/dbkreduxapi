@@ -6,20 +6,14 @@
         { "src": "!app.js", "use": "@now/static"}
     ],
     "routes": [
-        { "src": "/", "dest": "doc/index.html"},
-        { "src": "/css/(.*)", "dest": "doc/css/$1"},
-        { "src": "/fonts/(.*)", "dest": "doc/fonts/$1"},
-        { "src": "/img/(.*)", "dest": "doc/img/$1"},
-        { "src": "/locales/(.*)", "dest": "doc/locales/$1"},
-        { "src": "/utils/(.*)", "dest": "doc/utils/$1"},
-        { "src": "/vendor/(.*)", "dest": "doc/vendor/$1"},
-        { "src": "/main.js", "dest": "doc/main.js"},
-        { "src": "/api_data.js", "dest": "doc/api_data.js"},
-        { "src": "/api_data.json", "dest": "doc/api_data.json"},
-        { "src": "/api_project.js", "dest": "doc/api_project.js"},
-        { "src": "/api_project.json", "dest": "doc/api_project.json"},
-
-        
-        { "src": "/(.*)", "dest": "app.js" }
+        { "src": "/articles", "dest": "app.js" },
+        { "src": "/articles/(.*)", "dest": "app.js"},
+        { "src": "/featured_article", "dest": "app.js"},
+        { "src": "/menu/(.*)", "dest": "app.js"},
+        { "src": "/category/(.*)", "dest": "app.js"},
+        { "src": "/author/(.*)", "dest": "app.js"},
+        { "src": "/pages", "dest": "app.js"},
+        { "src": "/pages/(.*)", "dest": "app.js"},
+        { "src": "/(.*)", "dest": "doc/$1"}
     ]
 }

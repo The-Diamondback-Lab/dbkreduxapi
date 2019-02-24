@@ -2,9 +2,30 @@ const express = require('express');
 const app = express();
 const wp_api = require('./wordpress-service.js');
 const cors = require('cors');
-const sls = require('serverless-http')
 const apicache = require('apicache');
-const cache = apicache.middleware;
+const redis = require('redis');
+
+//CONFIGURE REDIS CACHING SERVER
+let redisConf = {
+  host: '3.92.94.94',
+  port: '6379'
+};
+
+let redisClient = redis.createClient(redisConf);
+redisClient.auth(process.env.REDISPWD);
+
+redisClient.on('connect', function() {
+  console.log('Redis client connected');
+});
+
+redisClient.on("error", function (err) {
+  console.log("Error " + err);
+});
+
+let cacheWithRedis = apicache
+                      .options({ redisClient: redisClient })
+                      .middleware
+
 
 app.use(cors());
 // app.use('/', express.static(__dirname + '/doc'));
@@ -30,7 +51,7 @@ app.use(cors());
 
  * 
  */
-app.get('/articles', cache('5 minutes'), function (req, res){
+app.get('/articles', cacheWithRedis('5 minutes'), function (req, res){
   let articles = req.query.per_page;
   let page = req.query.page;
   let category = req.query.category;
@@ -67,7 +88,7 @@ app.get('/articles/:articleId', function(req, res){
  * @apiName GetFeaturedArticle
  * @apiGroup Articles
  */
-app.get('/featured_article', cache('1 minute'), function(req, res){
+app.get('/featured_article', cacheWithRedis('1 minute'), function(req, res){
   res.setHeader('Content-Type', 'application/json');
   wp_api.getFeaturedArticle()
     .then(data => typeof data.response_code === 'undefined' ? (res.send(data)) : (res.status(data.response_code), res.send(data)));
@@ -81,7 +102,7 @@ app.get('/featured_article', cache('1 minute'), function(req, res){
  *
  * @apiParam  {String} menuId Unique menu ID.
  */
-app.get('/menu/:id', cache('5 minutes'), function (req, res){
+app.get('/menu/:id', cacheWithRedis('5 minutes'), function (req, res){
   let menu_id = req.params.id;
 
   res.setHeader('Content-Type', 'application/json');
@@ -96,7 +117,7 @@ app.get('/menu/:id', cache('5 minutes'), function (req, res){
  * 
  * @apiParam  {String} categoryId Unique category ID.
  */
-app.get('/category/:id', cache('5 minutes'), function (req, res){
+app.get('/category/:id', cacheWithRedis('5 minutes'), function (req, res){
   let category_id = req.params.id;
 
   res.setHeader('Content-Type', 'application/json');
@@ -111,7 +132,7 @@ app.get('/category/:id', cache('5 minutes'), function (req, res){
  * 
  * @apiParam  {String} authorId Unique author ID.
  */
-app.get('/author/:id', cache('5 minutes'), function(req, res){
+app.get('/author/:id', cacheWithRedis('5 minutes'), function(req, res){
   let author_id = req.params.id;
 
   res.setHeader('Content-Type', 'application/json');
@@ -127,7 +148,7 @@ app.get('/author/:id', cache('5 minutes'), function(req, res){
  * @apiParam  {String} [search] The search term to query pages by.
  * 
  */
-app.get('/pages', cache('5 minutes'), function(req, res){
+app.get('/pages', cacheWithRedis('5 minutes'), function(req, res){
   let search = req.query.search;
 
   res.setHeader('Content-Type', 'application/json');
@@ -150,13 +171,4 @@ app.get('/pages/:pageId', function(req, res){
   .then(data => typeof data.response_code === 'undefined' ? (res.send(data)) : (res.status(data.response_code), res.send(data)));
 });
 
-app.get('/ads', function (req, res){
-
-});
-
-
-
-// app.listen(process.env.PORT || 8080);
 module.exports = app;
-// module.exports.server = sls(app);
-
