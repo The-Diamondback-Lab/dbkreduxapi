@@ -29,10 +29,14 @@ app.use(cors());
  * 
  */
 app.get('/articles', function (req, res){
+  let expire = 60;
   res.setHeader('Content-Type', 'application/json');
   redis.get(req.originalUrl, (err, reply) => {
     if (reply){
-      res.send(reply);
+      redis.ttl(req.originalUrl, (_,ttl) => {
+        res.setHeader('Cache-Control', 'max-age='+ttl);
+        res.send(reply);
+      })
     }
     else{
       let articles = req.query.per_page;
@@ -47,7 +51,7 @@ app.get('/articles', function (req, res){
       wp_api.getArticles(articles, page, category, author, search, preview, order, orderby)
       .then(data => {
         if (typeof data.response_code === 'undefined'){
-          redis.setex(req.originalUrl, 60, JSON.stringify(data));
+          redis.setex(req.originalUrl, expire, JSON.stringify(data));
           res.send(data);
         }
         else { //don't cache non-200 responses
@@ -68,17 +72,21 @@ app.get('/articles', function (req, res){
  * @apiParam  {String} articleId Unique article ID (slug).
  */
 app.get('/articles/:articleId', function(req, res){
+  let expire = 30;
   res.setHeader('Content-Type', 'application/json');
   redis.get(req.originalUrl, (err, reply) => {
     if (reply){
-      res.send(reply);
+      redis.ttl(req.originalUrl, (_,ttl) => {
+        res.setHeader('Cache-Control', 'max-age='+ttl);
+        res.send(reply);
+      })
     }
     else{
       let articleId = req.params.articleId;
       wp_api.getArticle(articleId)
       .then(data => {
         if (typeof data.response_code === 'undefined'){
-          redis.setex(req.originalUrl, 30, JSON.stringify(data));
+          redis.setex(req.originalUrl, expire, JSON.stringify(data));
           res.send(data);
         }
         else { //don't cache non-200 responses
@@ -97,16 +105,20 @@ app.get('/articles/:articleId', function(req, res){
  * @apiGroup Articles
  */
 app.get('/featured_article', function(req, res){
+  let expire = 60
   res.setHeader('Content-Type', 'application/json');
   redis.get(req.originalUrl, (err, reply) => {
     if (reply){
-      res.send(reply);
+      redis.ttl(req.originalUrl, (_,ttl) => {
+        res.setHeader('Cache-Control', 'max-age='+ttl);
+        res.send(reply);
+      })
     }
     else{
       wp_api.getFeaturedArticle()
       .then(data => {
         if (typeof data.response_code === 'undefined'){
-          redis.setex(req.originalUrl, 60, JSON.stringify(data));
+          redis.setex(req.originalUrl, expire, JSON.stringify(data));
           res.send(data);
         }
         else { //don't cache non-200 responses
@@ -127,17 +139,21 @@ app.get('/featured_article', function(req, res){
  * @apiParam  {String} menuId Unique menu ID.
  */
 app.get('/menu/:id', function (req, res){
+  let expire = 300;
   res.setHeader('Content-Type', 'application/json');
   redis.get(req.originalUrl, (err, reply) => {
     if (reply){
-      res.send(reply);
+      redis.ttl(req.originalUrl, (_,ttl) => {
+        res.setHeader('Cache-Control', 'max-age='+ttl);
+        res.send(reply);
+      })
     }
     else{
       let menu_id = req.params.id;
       wp_api.getMenu(menu_id)
       .then(data => {
         if (typeof data.response_code === 'undefined'){
-          redis.setex(req.originalUrl, 300, JSON.stringify(data));
+          redis.setex(req.originalUrl, expire, JSON.stringify(data));
           res.send(data);
         }
         else { //don't cache non-200 responses
@@ -157,17 +173,21 @@ app.get('/menu/:id', function (req, res){
  * @apiParam  {String} categoryId Unique category ID.
  */
 app.get('/category/:id', function (req, res){
+  let expire = 300
   res.setHeader('Content-Type', 'application/json');
   redis.get(req.originalUrl, (err, reply) => {
     if (reply){
-      res.send(reply);
+      redis.ttl(req.originalUrl, (_,ttl) => {
+        res.setHeader('Cache-Control', 'max-age='+ttl);
+        res.send(reply);
+      })
     }
     else{
       let category_id = req.params.id;
       wp_api.getCategory(category_id)
       .then(data => {
         if (typeof data.response_code === 'undefined'){
-          redis.setex(req.originalUrl, 300, JSON.stringify(data));
+          redis.setex(req.originalUrl, expire, JSON.stringify(data));
           res.send(data);
         }
         else { //don't cache non-200 responses
@@ -187,17 +207,21 @@ app.get('/category/:id', function (req, res){
  * @apiParam  {String} authorId Unique author ID.
  */
 app.get('/author/:id', function(req, res){
+  let expire = 300;
   res.setHeader('Content-Type', 'application/json');
   redis.get(req.originalUrl, (err, reply) => {
     if (reply){
-      res.send(reply);
+      redis.ttl(req.originalUrl, (_,ttl) => {
+        res.setHeader('Cache-Control', 'max-age='+ttl);
+        res.send(reply);
+      })
     }
     else{
       let author_id = req.params.id;
       wp_api.getAuthor(author_id)
       .then(data => {
         if (typeof data.response_code === 'undefined'){
-          redis.setex(req.originalUrl, 300, JSON.stringify(data));
+          redis.setex(req.originalUrl, expire, JSON.stringify(data));
           res.send(data);
         }
         else { //don't cache non-200 responses
@@ -218,17 +242,21 @@ app.get('/author/:id', function(req, res){
  * 
  */
 app.get('/pages', function(req, res){
+  let expire = 300;
   res.setHeader('Content-Type', 'application/json');
   redis.get(req.originalUrl, (err, reply) => {
     if (reply){
-      res.send(reply);
+      redis.ttl(req.originalUrl, (_,ttl) => {
+        res.setHeader('Cache-Control', 'max-age='+ttl);
+        res.send(reply);
+      })
     }
     else{
       let search = req.query.search;
       wp_api.getPages(search)
       .then(data => {
         if (typeof data.response_code === 'undefined'){
-          redis.setex(req.originalUrl, 300, JSON.stringify(data));
+          redis.setex(req.originalUrl, expire, JSON.stringify(data));
           res.send(data);
         }
         else { //don't cache non-200 responses
@@ -248,17 +276,21 @@ app.get('/pages', function(req, res){
  * @apiParam  {String} pageId Unique page ID.
  */
 app.get('/pages/:pageId', function(req, res){
+  let expire = 30;
   res.setHeader('Content-Type', 'application/json');
   redis.get(req.originalUrl, (err, reply) => {
     if (reply){
-      res.send(reply);
+      redis.ttl(req.originalUrl, (_,ttl) => {
+        res.setHeader('Cache-Control', 'max-age='+ttl);
+        res.send(reply);
+      })
     }
     else{
       let pageId = req.params.pageId;
       wp_api.getPage(pageId)
       .then(data => {
         if (typeof data.response_code === 'undefined'){
-          redis.setex(req.originalUrl, 30, JSON.stringify(data));
+          redis.setex(req.originalUrl, expire, JSON.stringify(data));
           res.send(data);
         }
         else { //don't cache non-200 responses
