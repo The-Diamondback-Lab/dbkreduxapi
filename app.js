@@ -34,7 +34,7 @@ app.get('/articles', function (req, res){
   redis.get(req.originalUrl, (err, reply) => {
     if (reply){
       redis.ttl(req.originalUrl, (_,ttl) => {
-        res.setHeader('Cache-Control', 'max-age='+ttl);
+        res.setHeader('Cache-Control', 'max-age='+ttl+', must-revalidate');
         res.send(reply);
       })
     }
@@ -77,7 +77,7 @@ app.get('/articles/:articleId', function(req, res){
   redis.get(req.originalUrl, (err, reply) => {
     if (reply){
       redis.ttl(req.originalUrl, (_,ttl) => {
-        res.setHeader('Cache-Control', 'max-age='+ttl);
+        res.setHeader('Cache-Control', 'max-age='+ttl+', must-revalidate');
         res.send(reply);
       })
     }
@@ -110,7 +110,7 @@ app.get('/featured_article', function(req, res){
   redis.get(req.originalUrl, (err, reply) => {
     if (reply){
       redis.ttl(req.originalUrl, (_,ttl) => {
-        res.setHeader('Cache-Control', 'max-age='+ttl);
+        res.setHeader('Cache-Control', 'max-age='+ttl+', must-revalidate');
         res.send(reply);
       })
     }
@@ -144,7 +144,7 @@ app.get('/menu/:id', function (req, res){
   redis.get(req.originalUrl, (err, reply) => {
     if (reply){
       redis.ttl(req.originalUrl, (_,ttl) => {
-        res.setHeader('Cache-Control', 'max-age='+ttl);
+        res.setHeader('Cache-Control', 'max-age='+ttl+', must-revalidate');
         res.send(reply);
       })
     }
@@ -178,7 +178,7 @@ app.get('/category/:id', function (req, res){
   redis.get(req.originalUrl, (err, reply) => {
     if (reply){
       redis.ttl(req.originalUrl, (_,ttl) => {
-        res.setHeader('Cache-Control', 'max-age='+ttl);
+        res.setHeader('Cache-Control', 'max-age='+ttl+', must-revalidate');
         res.send(reply);
       })
     }
@@ -212,7 +212,7 @@ app.get('/author/:id', function(req, res){
   redis.get(req.originalUrl, (err, reply) => {
     if (reply){
       redis.ttl(req.originalUrl, (_,ttl) => {
-        res.setHeader('Cache-Control', 'max-age='+ttl);
+        res.setHeader('Cache-Control', 'max-age='+ttl+', must-revalidate');
         res.send(reply);
       })
     }
@@ -247,7 +247,7 @@ app.get('/pages', function(req, res){
   redis.get(req.originalUrl, (err, reply) => {
     if (reply){
       redis.ttl(req.originalUrl, (_,ttl) => {
-        res.setHeader('Cache-Control', 'max-age='+ttl);
+        res.setHeader('Cache-Control', 'max-age='+ttl+', must-revalidate');
         res.send(reply);
       })
     }
@@ -281,7 +281,7 @@ app.get('/pages/:pageId', function(req, res){
   redis.get(req.originalUrl, (err, reply) => {
     if (reply){
       redis.ttl(req.originalUrl, (_,ttl) => {
-        res.setHeader('Cache-Control', 'max-age='+ttl);
+        res.setHeader('Cache-Control', 'max-age='+ttl+', must-revalidate');
         res.send(reply);
       })
     }
