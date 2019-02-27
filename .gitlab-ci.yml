@@ -10,7 +10,7 @@ stages:
 
 setup:
   stage: setup
-  script: ./node_modules/.bin/apidoc -e node_modules/ | npm install
+  script: npm install | ./node_modules/.bin/apidoc -e node_modules/ 
 
 # test:
 #   stage: test
@@ -19,13 +19,13 @@ setup:
 deploy_staging:
   stage: deploy
   script:
-    - ./node_modules/.bin/now
+    - ./node_modules/.bin/now --token=NOW_TOKEN
 
 deploy_prod:
   stage: deploy
   script:
-    - ./node_modules/.bin/now
-    - ./node_modules/.bin/now alias api.dbknews.com
+    - ./node_modules/.bin/now --token=NOW_TOKEN
+    - ./node_modules/.bin/now alias api.dbknews.com --token=NOW_TOKEN
   environment:
     name: production
     url: https://api.dbknews.com
