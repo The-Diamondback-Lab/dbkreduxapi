@@ -24,9 +24,11 @@
   },
   "homepage": "https://github.com/The-Diamondback-Lab/article-api#readme",
   "dependencies": {
+    "apidoc": "^0.17.7",
     "cors": "^2.8.5",
     "express": "^4.16.3",
     "node-fetch": "^2.2.0",
+    "now": "^14.0.1",
     "redis": "^2.8.0"
   }
 }
