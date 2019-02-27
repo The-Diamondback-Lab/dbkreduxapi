@@ -6,11 +6,16 @@ cache:
 
 stages:
   - setup
+  - docs
   - deploy
 
 setup:
   stage: setup
-  script: npm install | ./node_modules/.bin/apidoc -e node_modules/ 
+  script: npm install
+
+docs:
+  stage: docs
+  script: ./node_modules/.bin/apidoc -e node_modules/ 
 
 # test:
 #   stage: test
