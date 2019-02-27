@@ -21,6 +21,7 @@ setup:
 deploy_staging:
   stage: deploy
   script:
+    - ./node_modules/.bin/apidoc -e node_modules/ -o doc/
     - ./node_modules/.bin/now --team=the-diamondback-lab --token=$NOW_TOKEN
 
 deploy_prod:
