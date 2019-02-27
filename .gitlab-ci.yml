@@ -3,11 +3,13 @@ image: node:10.5.0
 cache:
   paths:
     - node_modules/
+    - doc/
 
 stages:
   - setup
   # - test
-  - deploy
+  - staging
+  - production
 
 setup:
   stage: setup
@@ -18,16 +20,15 @@ setup:
 #   stage: test
 #   script: npm test
 
-deploy_staging:
-  stage: deploy
+dev:
+  stage: staging
   script:
     - ./node_modules/.bin/apidoc -e node_modules/ -o doc/
     - ./node_modules/.bin/now --team=the-diamondback-lab --token=$NOW_TOKEN
 
-deploy_prod:
-  stage: deploy
+production:
+  stage: production
   script:
-    - ./node_modules/.bin/apidoc -e node_modules/ -o doc/
     - ./node_modules/.bin/now --team=the-diamondback-lab --token=$NOW_TOKEN
     - ./node_modules/.bin/now alias api.dbknews.com --team=the-diamondback-lab --token=$NOW_TOKEN
   environment:
