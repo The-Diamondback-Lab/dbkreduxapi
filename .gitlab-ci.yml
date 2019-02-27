@@ -13,7 +13,7 @@ setup:
   stage: setup
   script: 
     - npm install
-    - ./node_modules/.bin/apidoc -e node_modules/ 
+    - ./node_modules/.bin/apidoc -e node_modules/ -o doc/
 
 # test:
 #   stage: test
