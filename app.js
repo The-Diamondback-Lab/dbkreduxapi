@@ -33,10 +33,7 @@ app.get('/articles', function (req, res){
   res.setHeader('Content-Type', 'application/json');
   redis.get(req.originalUrl, (err, reply) => {
     if (reply){
-      redis.ttl(req.originalUrl, (_,ttl) => {
-        res.setHeader('Cache-Control', 'max-age='+ttl+', must-revalidate');
-        res.send(reply);
-      })
+      res.send(reply);
     }
     else{
       let articles = req.query.per_page;
@@ -76,10 +73,7 @@ app.get('/articles/:articleId', function(req, res){
   res.setHeader('Content-Type', 'application/json');
   redis.get(req.originalUrl, (err, reply) => {
     if (reply){
-      redis.ttl(req.originalUrl, (_,ttl) => {
-        res.setHeader('Cache-Control', 'max-age='+ttl+', must-revalidate');
-        res.send(reply);
-      })
+      res.send(reply);
     }
     else{
       let articleId = req.params.articleId;
@@ -109,10 +103,7 @@ app.get('/featured_article', function(req, res){
   res.setHeader('Content-Type', 'application/json');
   redis.get(req.originalUrl, (err, reply) => {
     if (reply){
-      redis.ttl(req.originalUrl, (_,ttl) => {
-        res.setHeader('Cache-Control', 'max-age='+ttl+', must-revalidate');
-        res.send(reply);
-      })
+      res.send(reply);
     }
     else{
       wp_api.getFeaturedArticle()
@@ -143,10 +134,7 @@ app.get('/menu/:id', function (req, res){
   res.setHeader('Content-Type', 'application/json');
   redis.get(req.originalUrl, (err, reply) => {
     if (reply){
-      redis.ttl(req.originalUrl, (_,ttl) => {
-        res.setHeader('Cache-Control', 'max-age='+ttl+', must-revalidate');
-        res.send(reply);
-      })
+      res.send(reply);
     }
     else{
       let menu_id = req.params.id;
@@ -177,10 +165,7 @@ app.get('/category/:id', function (req, res){
   res.setHeader('Content-Type', 'application/json');
   redis.get(req.originalUrl, (err, reply) => {
     if (reply){
-      redis.ttl(req.originalUrl, (_,ttl) => {
-        res.setHeader('Cache-Control', 'max-age='+ttl+', must-revalidate');
-        res.send(reply);
-      })
+      res.send(reply);
     }
     else{
       let category_id = req.params.id;
@@ -211,10 +196,7 @@ app.get('/author/:id', function(req, res){
   res.setHeader('Content-Type', 'application/json');
   redis.get(req.originalUrl, (err, reply) => {
     if (reply){
-      redis.ttl(req.originalUrl, (_,ttl) => {
-        res.setHeader('Cache-Control', 'max-age='+ttl+', must-revalidate');
-        res.send(reply);
-      })
+      res.send(reply);
     }
     else{
       let author_id = req.params.id;
@@ -246,10 +228,7 @@ app.get('/pages', function(req, res){
   res.setHeader('Content-Type', 'application/json');
   redis.get(req.originalUrl, (err, reply) => {
     if (reply){
-      redis.ttl(req.originalUrl, (_,ttl) => {
-        res.setHeader('Cache-Control', 'max-age='+ttl+', must-revalidate');
-        res.send(reply);
-      })
+      res.send(reply);
     }
     else{
       let search = req.query.search;
@@ -280,10 +259,7 @@ app.get('/pages/:pageId', function(req, res){
   res.setHeader('Content-Type', 'application/json');
   redis.get(req.originalUrl, (err, reply) => {
     if (reply){
-      redis.ttl(req.originalUrl, (_,ttl) => {
-        res.setHeader('Cache-Control', 'max-age='+ttl+', must-revalidate');
-        res.send(reply);
-      })
+      res.send(reply);
     }
     else{
       let pageId = req.params.pageId;
