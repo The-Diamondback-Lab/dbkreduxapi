@@ -2,6 +2,7 @@ const fetch = require('node-fetch');
 
 const wp_url = "http://54.196.232.70";
 const replace_wp_url = "http://wordpress.dbknews.com";
+const replace_wp_ip = "https://54.196.232.70";
 
 const all_posts_url = `${wp_url}/wp-json/wp/v2/posts?_embed&`;
 const featured_post_url = `${wp_url}/wp-json/wp/v2/posts?featured-story=1&per_page=1&_embed`;
@@ -287,6 +288,7 @@ function sanitizePage(page) {
 
 function sanitizeMenuUrls(menuItem) {
   menuItem.url = menuItem.url.replace(replace_wp_url, "");
+  menuItem.url = menuItem.url.replace(replace_wp_ip, "");
   if (menuItem.children) {
     menuItem.children.forEach(child => {
       if (menuItem.type !== 'custom') {
@@ -301,6 +303,7 @@ function replaceUrl(input) {
     return;
   }
   input.link = input.link.replace(replace_wp_url, "");
+  input.link = input.link.replace(replace_wp_ip, "");
   return input;
 }
 
