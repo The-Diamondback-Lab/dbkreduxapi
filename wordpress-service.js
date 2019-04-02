@@ -1,7 +1,7 @@
 const fetch = require('node-fetch');
 
 const wp_url = "http://54.196.232.70";
-const replace_wp_url = "http://wordpress.dbknews.com";
+const replace_wp_url = "https://wordpress.dbknews.com";
 const replace_wp_ip = "https://54.196.232.70";
 
 const all_posts_url = `${wp_url}/wp-json/wp/v2/posts?_embed&`;
