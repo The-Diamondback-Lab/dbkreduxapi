@@ -287,8 +287,10 @@ function sanitizePage(page) {
 }
 
 function sanitizeMenuUrls(menuItem) {
+  menuItem.url = menuItem.url.replace(wp_url, "");
   menuItem.url = menuItem.url.replace(replace_wp_url, "");
   menuItem.url = menuItem.url.replace(replace_wp_ip, "");
+
   if (menuItem.children) {
     menuItem.children.forEach(child => {
       if (menuItem.type !== 'custom') {
@@ -302,6 +304,7 @@ function replaceUrl(input) {
   if (!input.link) {
     return;
   }
+  input.link = input.link.replace(wp_url, "");
   input.link = input.link.replace(replace_wp_url, "");
   input.link = input.link.replace(replace_wp_ip, "");
   return input;
