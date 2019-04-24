@@ -1,4 +1,5 @@
 const redis = require('redis');
+require('dotenv').config();
 
 let redisConf = {
   host: '3.92.94.94',

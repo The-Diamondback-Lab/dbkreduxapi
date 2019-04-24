@@ -1,0 +1,288 @@
+
+{
+    "swagger": "2.0",
+    "info": {
+      "version": "1.0.0",
+      "title": "The Diamondback API",
+      "description": "A public-facing API created by The Diamondback Lab. This API is used on several of The Diamondback's sites, including the main site and the Salary Guide.",
+      "license": {
+        "name": "MIT",
+        "url": "https://opensource.org/licenses/MIT"
+      }
+    },
+    "host": "api.dbknews.com",
+    "basePath": "/",
+    "schemes": [
+      "https"
+    ],
+    "consumes": [
+      "application/json"
+    ],
+    "produces": [
+      "application/json"
+    ],
+    "paths": {
+
+      "/articles": {
+        "get": {
+          "tags": [
+            "articles"
+          ],
+          "parameters": [
+            {
+              "name": "preview",
+              "in": "query",
+              "description": "Whether to retrieve full article data or just preview data.",
+              "required": true,
+              "type": "boolean"
+            },
+            {
+              "name": "per_page",
+              "in": "query",
+              "description": "The number of articles to retrieve per page.",
+              "required": false,
+              "type": "number"
+            },
+            {
+              "name": "page",
+              "in": "query",
+              "description": "The page of articles to retrieve.",
+              "required": false,
+              "type": "number"
+            },
+            {
+              "name": "category",
+              "in": "query",
+              "description": "The category ID (slug) from which to retrieve articles.",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "name": "author",
+              "in": "query",
+              "description": "The author ID (slug) from which to retrieve articles.",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "name": "search",
+              "in": "query",
+              "description": "The search term to query articles by.",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "name": "order",
+              "in": "query",
+              "description": "Order of the results. [author, date, modified, relevance, title]",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "name": "orderby",
+              "in": "query",
+              "description": "How to order the results. [asc, desc]",
+              "required": false,
+              "type": "string"
+            }
+          ],
+          "summary": "Gets a list of DBK articles."
+        }
+      },
+
+      "/article/{articleId}": {
+        "get": {
+          "tags": [
+            "articles"
+          ],
+          "parameters": [
+            {
+              "name": "articleId",
+              "in": "path",
+              "description": "Unique article ID (slug).",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "summary": "Gets a single DBK Article."
+        }
+      },
+
+      "/featured_article": {
+        "get": {
+          "tags": [
+            "articles"
+          ],
+          "summary": "Gets the current homepage featured article."
+        }
+      },
+      
+      "/authors/:authorId": {
+        "get": {
+          "tags": [
+            "authors"
+          ],
+          "parameters": [
+            {
+              "name": "authorId",
+              "in": "path",
+              "description": "Unique author ID.",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "summary": "Gets data for an author."
+        }
+      },
+
+      "/category/:categoryId": {
+        "get": {
+          "tags": [
+            "categories"
+          ],
+          "parameters": [
+            {
+              "name": "categoryId",
+              "in": "path",
+              "description": "Unique category ID.",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "summary": "Gets data for a category."
+        }
+      },      
+
+      "/menu/:menuId": {
+        "get": {
+          "tags": [
+            "menus"
+          ],
+          "parameters": [
+            {
+              "name": "menuId",
+              "in": "path",
+              "description": "Unique menu ID.",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "summary": "Gets data for a menu."
+        }
+      },     
+      
+      "/pages": {
+        "get": {
+          "tags": [
+            "pages"
+          ],
+          "parameters": [
+            {
+              "name": "search",
+              "in": "query",
+              "description": "The search term to query pages by.",
+              "required": false,
+              "type": "string"
+            }
+          ],
+          "summary": "Gets a list of DBK pages."
+        }
+      },  
+
+      "/pages/:pageId": {
+        "get": {
+          "tags": [
+            "pages"
+          ],
+          "parameters": [
+            {
+              "name": "pageId",
+              "in": "path",
+              "description": "Unique page ID.",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "summary": "Gets data for a page."
+        }
+      },  
+
+      "/salary/year/{yearId}": {
+        "get": {
+          "tags": [
+            "salary"
+          ],
+          "parameters": [
+            {
+                "name": "yearId",
+                "in": "path",
+                "description": "The chosen year to get data from.",
+                "required": true,
+                "type": "string"
+            },
+            {
+                "name": "page",
+                "in": "query",
+                "description": "Page of results to show.",
+                "required": false,
+                "type": "string"
+            },
+            {
+                "name": "sortby",
+                "in": "query",
+                "description": "Which column to sort by.",
+                "required": false,
+                "type": "string"
+            },
+            {
+                "name": "order",
+                "in": "query",
+                "description": "The order to display results in.",
+                "required": false,
+                "type": "string"
+            },
+            {
+                "name": "search",
+                "in": "query",
+                "description": "String to search all results by.",
+                "required": false,
+                "type": "string"
+            }
+          ],
+          "summary": "Get a table of salary data by year.",
+          "responses": {
+            "200": {
+              "description": "OK",
+              "schema": {
+                "type": "array",
+                "items": {
+                    "$ref": "#/definitions/SalaryYear"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "definitions": {
+      "SalaryYear": {
+        "properties": {
+          "Employee": {
+            "type": "string"
+          },
+          "Department": {
+            "type": "string"
+          },
+          "Division": {
+            "type": "string"
+          },
+          "Title": {
+            "type": "string"
+          },
+          "Salary": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }

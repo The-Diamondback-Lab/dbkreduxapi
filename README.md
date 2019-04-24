@@ -28,9 +28,15 @@ Follow the steps below to get your development enviroment set up.
 
     in the terminal. This will install the necessary dependencies for the project. A list of those dependencies can be found in `package.json`.
 
+3.  For testing purposes, because this is a serverless project, we use a package to simulate a serverless environment called      [Now We Test](https://www.npmjs.com/package/now-we-test). This is still in development, but it works for now. To install      it, run:
+
+    ```
+    npm install -g now-we-test
+    ```
+
 ## Development
 
-Open a new terminal tab and run `npm start`. This will run the server locally on your machine, which can be accessed at http://localhost:8080.
+Open a new terminal tab and run `now-we-test serve`. This will simulate a serverless environment locally on your machine, which can be accessed at http://localhost:3000.
 
 ## Deployment
 
@@ -40,7 +46,7 @@ The API is deployed to Zeit's [Now](https://zeit.co/now). Once you get set up wi
 
 2. Once you authenticate, switch from your account to the team's account by running `now switch` and choosing the team.
 
-3. To deploy, simply run `now`. Now will grab all necessary deployment information from the included `now.json`. It will automatically use the stored secret variable (`redispwd`) as an environment variable in deployment, as specified in `now.json`. More on that: https://zeit.co/blog/environment-variables-secrets.
+3. To deploy, simply run `now`. Now will grab all necessary deployment information from the included `now.json`. It will automatically use the stored secret variables as environment variables in deployment, as specified in `now.json`. More on that: https://zeit.co/blog/environment-variables-secrets.
 
 4. If the deployment looks good, you can alias it to the production URL. To do this, run `now alias api.dbknews.com`. 
 

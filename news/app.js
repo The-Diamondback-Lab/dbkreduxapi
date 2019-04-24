@@ -1,8 +1,8 @@
 const express = require('express');
 const app = express();
-const wp_api = require('./wordpress-service.js');
+const wp_api = require('../utilities/wordpress-service.js');
 const cors = require('cors');
-const redis = require('./redis');
+const redis = require('../utilities/redis');
 
 app.use(cors());
 // app.use('/', express.static(__dirname + '/doc'));
@@ -10,6 +10,15 @@ app.use(cors());
 // app.get('/', function(req, res){
 //   res.sendFile( __dirname + "/doc/index.html");
 // });
+
+const swaggerUi = require('swagger-ui-express'), swaggerDocument = require('../swagger.json')
+
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
+
+app.get('/', (req, res) => { 
+    res.redirect('/docs')
+})
+
 
 
 /**
