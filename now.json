@@ -34,8 +34,5 @@
         "DB_PASSWORD": "@salguide_db_password",
         "DB_PORT": "@salguide_db_port",
         "DB_NAME": "@salguide_db_name"
-    },
-    "files": [
-        "doc"
-    ] 
+    }
 }

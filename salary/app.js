@@ -1,7 +1,9 @@
 const express = require('express')
 const db = require('../utilities/db')
+const cors = require('cors')
 
 const app = express()
+app.use(cors())
 db.connect()
 
 app.get('/salary', (req, res) => { 
