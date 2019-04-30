@@ -20,6 +20,16 @@ app.get('/salary/year/:year', async (req, res) => {
     sendResponse(res, 200, { data: results, count: count[0]["COUNT(*)"] })
 })
 
+app.get('/salary/years', async (req, res) => {
+    let tableQuery = {
+        string: "SHOW TABLES",
+        params: []
+    }
+    let tables = await runQuery(res, tableQuery.string, tableQuery.params)
+    tables = tables.map(t => t.Tables_in_saldbinstance.replace("Data", ''))
+    sendResponse(res, 200, { data: tables })
+})
+
 /**
  * Takes in a request object and builds a SQL query for the Salary Guide database.
  * 
@@ -127,12 +137,12 @@ let sendResponse = (res, status, message) => {
  * @param {object} error - Error object from SQL execution.
  */
 let handleError = (res, error) => {
-    if (error.code === 'ER_NO_SUCH_TABLE') {
-        sendResponse(res, 500, {message: 'Invalid Year Supplied'})
-    }
-    else {
-        sendResponse(res, 500, error)
-    }
+    // if (error.code === 'ER_NO_SUCH_TABLE') {
+    //     sendResponse(res, 500, {message: 'Invalid Year Supplied'})
+    // }
+    // else {
+    sendResponse(res, 500, error)
+    //}
 }
 
 module.exports = app

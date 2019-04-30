@@ -262,6 +262,13 @@
             }
           }
         }
+      },
+
+      "/salary/years": {
+        "get": {
+          "tags": [ "salary" ],
+          "summary": "Gets a list of all years in the Salary Guide database."
+        }
       }
     },
     "definitions": {
