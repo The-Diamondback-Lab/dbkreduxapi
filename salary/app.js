@@ -1,27 +1,33 @@
 const express = require('express')
-const db = require('../utilities/db')
+const async = require('async')
+
 const cors = require('cors')
 
 const app = express()
 app.use(cors())
-db.connect()
 
 app.get('/salary', (req, res) => { 
-    sendResponse(res, 200, "Salary Data");
+    res.redirect("https://api.dbknews.com/#tag-salary")
 })
 
-app.get('/salary/year/:year', (req, res) => { 
+app.get('/salary/year/:year', async (req, res) => { 
     let query = buildQuery(req)
-
-    runQuery(res, query.string, query.params)
+    let countQuery = buildQuery(req, "count")
+    
+    let results = await runQuery(res, query.string, query.params)
+    let count = await runQuery(res, countQuery.string, countQuery.params)
+    
+    sendResponse(res, 200, { data: results, count: count[0]["COUNT(*)"] })
 })
 
 /**
  * Takes in a request object and builds a SQL query for the Salary Guide database.
  * 
  * @param {object} req - Express request variable.
+ * @param {string} type - Define what kind of query to build (results or count)
+ * 
  */
-let buildQuery = (req) => {
+let buildQuery = (req, type="results") => {
     let PAGESIZE = 10
     let COLUMNS = ['Division', "Department", "Title", "Employee", "Salary"]
     let year = req.params.year
@@ -34,7 +40,11 @@ let buildQuery = (req) => {
         offset = (page-1) * PAGESIZE
     }
 
-    let queryString = `SELECT * FROM ?? `
+    let queryString = `SELECT * FROM ??`
+    if (type === "count") {
+        queryString = `SELECT COUNT(*) FROM ??`
+    }
+
     let queryParams = [year+"Data"]
 
     let search = req.query.search
@@ -44,6 +54,13 @@ let buildQuery = (req) => {
             queryString += ` ${col} LIKE ? ${i < COLUMNS.length-1 ? 'OR' : ''} `
             queryParams.push('%'+search+'%')
         })
+    }
+
+    if (type === "count") {
+        return {
+            string: queryString,
+            params: queryParams
+        }
     }
 
     let sortby = req.query.sortby
@@ -63,9 +80,9 @@ let buildQuery = (req) => {
     }
 
     queryString += ` LIMIT ${offset}, ${PAGESIZE} `
-
     queryString = queryString.trim()
     queryString = queryString.replace(/ +/g, " ")
+
     return {
         string: queryString,
         params: queryParams
@@ -73,22 +90,24 @@ let buildQuery = (req) => {
 }
 
 /**
- * Runs a SQL query and sends the result.
+ * Runs a SQL query and returns the result, otherwise sends an error.
  * 
  * @param {object} res - Express response variable.
  * @param {string} query - Query string to pass into SQL.
  * @param {array} params - Objects to substitute into the query.
  */
-let runQuery = (res, query, params) => {
-    db.query(query, params, function(error, results, fields) {
-        if (error){
-            handleError(res, error)
-        }
-        else{
-            sendResponse(res, 200, results)
-        }
-    })
+let runQuery = async function (res, query, params) {
+    let db = require('../utilities/db')
+
+    try {
+        let results = await db.query(query, params)
+        return results
+    }
+    catch (err) {
+        handleError(res, err)
+    }
 }
+
 
 /**
  * Sends a response using Express. 

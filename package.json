@@ -26,6 +26,7 @@
   "homepage": "https://github.com/The-Diamondback-Lab/article-api#readme",
   "dependencies": {
     "apidoc": "^0.17.7",
+    "async": "^2.6.2",
     "cors": "^2.8.5",
     "dotenv": "^7.0.0",
     "express": "^4.16.3",
