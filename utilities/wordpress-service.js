@@ -239,13 +239,23 @@ function sanitizeArticle(article) {
   delete article.author._links;
 
   //extract featured image link and caption
-  if (typeof article._embedded["wp:featuredmedia"] != 'undefined') {
-    let sizes = article._embedded["wp:featuredmedia"][0].media_details.sizes;
+  if (typeof article._embedded["wp:featuredmedia"] !== 'undefined') {
+    let featured_media_obj = article._embedded["wp:featuredmedia"];
+    let sizes = '';
+    let caption = '';
+
+    if (featured_media_obj.sizes) {
+      sizes = article._embedded["wp:featuredmedia"][0].media_details.sizes;
+    }
+    if (featured_media_obj[0].caption) {
+      caption = article._embedded["wp:featuredmedia"][0].caption.rendered
+    }
+
     let fallback_url = article._embedded["wp:featuredmedia"][0].source_url;
     if (!sizes) {
       article.featured_image = {
         url: fallback_url,
-        caption: article._embedded["wp:featuredmedia"][0].caption.rendered,
+        caption: caption,
         article: fallback_url,
         preview: fallback_url
       };  
@@ -253,7 +263,7 @@ function sanitizeArticle(article) {
     else{
       article.featured_image = {
         url: sizes.full.source_url,
-        caption: article._embedded["wp:featuredmedia"][0].caption.rendered,
+        caption: caption,
         article: (sizes.large ? sizes.large.source_url : sizes.full.source_url),
         preview: (sizes.medium ? sizes.medium.source_url : sizes.full.source_url)
       };  
