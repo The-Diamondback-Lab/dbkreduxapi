@@ -3,23 +3,16 @@ const app = express();
 const wp_api = require('../utilities/wordpress-service.js');
 const cors = require('cors');
 const redis = require('../utilities/redis');
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('../swagger.json');
 
 app.use(cors());
-// app.use('/', express.static(__dirname + '/doc'));
-
-// app.get('/', function(req, res){
-//   res.sendFile( __dirname + "/doc/index.html");
-// });
-
-const swaggerUi = require('swagger-ui-express'), swaggerDocument = require('../swagger.json')
 
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
 
-app.get('/', (req, res) => { 
-    res.redirect('/docs')
+app.get('/', (req, res) => {
+  res.redirect('/docs')
 })
-
-
 
 /**
  * @api {get} /articles?preview={boolean} Gets a list of DBK articles
@@ -29,13 +22,13 @@ app.get('/', (req, res) => {
  * @apiParam  {Boolean} preview Whether to retrieve full article data or just preview data.
  * @apiParam  {Number} [per_page] The number of articles to retrieve per page.
  * @apiParam  {Number} [page] The page of articles to retrieve.
- * @apiParam  {String} [category] The category ID (slug) from which to retrieve articles. 
- * @apiParam  {String} [author] The author ID (slug) from which to retrieve articles. 
+ * @apiParam  {String} [category] The category ID (slug) from which to retrieve articles.
+ * @apiParam  {String} [author] The author ID (slug) from which to retrieve articles.
  * @apiParam  {String} [search] The search term to query articles by.
  * @apiParam  {String} [order] Order of the results. [author, date, modified, relevance, title]
  * @apiParam  {String} [orderby] How to order the results. [asc, desc]
 
- * 
+ *
  */
 app.get('/articles', function (req, res){
   let expire = 60;
@@ -53,7 +46,7 @@ app.get('/articles', function (req, res){
       let preview = req.query.preview;
       let order = req.query.order;
       let orderby = req.query.orderby;
-    
+
       wp_api.getArticles(articles, page, category, author, search, preview, order, orderby)
       .then(data => {
         if (typeof data.response_code === 'undefined'){
@@ -64,7 +57,7 @@ app.get('/articles', function (req, res){
           res.status(data.response_code);
           res.send(data);
         }
-      });  
+      });
     }
   })
 });
@@ -96,7 +89,7 @@ app.get('/articles/:articleId', function(req, res){
           res.status(data.response_code);
           res.send(data);
         }
-      });  
+      });
     }
   })
 });
@@ -125,9 +118,9 @@ app.get('/featured_article', function(req, res){
           res.status(data.response_code);
           res.send(data);
         }
-      });  
+      });
     }
-  })  
+  })
 });
 
 
@@ -157,16 +150,16 @@ app.get('/menu/:id', function (req, res){
           res.status(data.response_code);
           res.send(data);
         }
-      });  
+      });
     }
-  })    
+  })
 });
 
 /**
  * @api {get} /category/:categoryId Gets data for a category
  * @apiName GetCategory
  * @apiGroup Categories
- * 
+ *
  * @apiParam  {String} categoryId Unique category ID.
  */
 app.get('/category/:id', function (req, res){
@@ -188,16 +181,16 @@ app.get('/category/:id', function (req, res){
           res.status(data.response_code);
           res.send(data);
         }
-      });  
+      });
     }
-  })    
+  })
 });
 
 /**
  * @api {get} /author/:authorId Gets data for an author
  * @apiName GetAuthor
  * @apiGroup Authors
- * 
+ *
  * @apiParam  {String} authorId Unique author ID.
  */
 app.get('/author/:id', function(req, res){
@@ -219,9 +212,9 @@ app.get('/author/:id', function(req, res){
           res.status(data.response_code);
           res.send(data);
         }
-      });  
+      });
     }
-  })    
+  })
 });
 
 /**
@@ -230,7 +223,7 @@ app.get('/author/:id', function(req, res){
  * @apiGroup Pages
  *
  * @apiParam  {String} [search] The search term to query pages by.
- * 
+ *
  */
 app.get('/pages', function(req, res){
   let expire = 300;
@@ -251,16 +244,16 @@ app.get('/pages', function(req, res){
           res.status(data.response_code);
           res.send(data);
         }
-      });  
+      });
     }
-  })    
+  })
 });
 
 /**
  * @api {get} /pages/:pageId Gets data for a page
  * @apiName GetPage
  * @apiGroup Pages
- * 
+ *
  * @apiParam  {String} pageId Unique page ID.
  */
 app.get('/pages/:pageId', function(req, res){
@@ -282,9 +275,9 @@ app.get('/pages/:pageId', function(req, res){
           res.status(data.response_code);
           res.send(data);
         }
-      });  
+      });
     }
-  })    
+  })
 });
 
 module.exports = app;
