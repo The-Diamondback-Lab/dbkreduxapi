@@ -1,16 +1,16 @@
 const express = require('express');
-const app = express();
+const router = express.Router();
 const wp_api = require('../utilities/wordpress-service.js');
 const cors = require('cors');
 const redis = require('../utilities/redis');
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('../swagger.json');
 
-app.use(cors());
+router.use(cors());
 
-app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
+router.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
 
-app.get('/', (req, res) => {
+router.get('/', (req, res) => {
   res.redirect('/docs')
 })
 
@@ -30,7 +30,7 @@ app.get('/', (req, res) => {
 
  *
  */
-app.get('/articles', function (req, res){
+router.get('/articles', function (req, res){
   let expire = 60;
   res.setHeader('Content-Type', 'application/json');
   redis.get(req.originalUrl, (err, reply) => {
@@ -70,7 +70,7 @@ app.get('/articles', function (req, res){
  *
  * @apiParam  {String} articleId Unique article ID (slug).
  */
-app.get('/articles/:articleId', function(req, res){
+router.get('/articles/:articleId', function(req, res){
   let expire = 30;
   res.setHeader('Content-Type', 'application/json');
   redis.get(req.originalUrl, (err, reply) => {
@@ -100,7 +100,7 @@ app.get('/articles/:articleId', function(req, res){
  * @apiName GetFeaturedArticle
  * @apiGroup Articles
  */
-app.get('/featured_article', function(req, res){
+router.get('/featured_article', function(req, res){
   let expire = 60
   res.setHeader('Content-Type', 'application/json');
   redis.get(req.originalUrl, (err, reply) => {
@@ -131,7 +131,7 @@ app.get('/featured_article', function(req, res){
  *
  * @apiParam  {String} menuId Unique menu ID.
  */
-app.get('/menu/:id', function (req, res){
+router.get('/menu/:id', function (req, res){
   let expire = 300;
   res.setHeader('Content-Type', 'application/json');
   redis.get(req.originalUrl, (err, reply) => {
@@ -162,7 +162,7 @@ app.get('/menu/:id', function (req, res){
  *
  * @apiParam  {String} categoryId Unique category ID.
  */
-app.get('/category/:id', function (req, res){
+router.get('/category/:id', function (req, res){
   let expire = 300
   res.setHeader('Content-Type', 'application/json');
   redis.get(req.originalUrl, (err, reply) => {
@@ -193,7 +193,7 @@ app.get('/category/:id', function (req, res){
  *
  * @apiParam  {String} authorId Unique author ID.
  */
-app.get('/author/:id', function(req, res){
+router.get('/author/:id', function(req, res){
   let expire = 300;
   res.setHeader('Content-Type', 'application/json');
   redis.get(req.originalUrl, (err, reply) => {
@@ -225,7 +225,7 @@ app.get('/author/:id', function(req, res){
  * @apiParam  {String} [search] The search term to query pages by.
  *
  */
-app.get('/pages', function(req, res){
+router.get('/pages', function(req, res){
   let expire = 300;
   res.setHeader('Content-Type', 'application/json');
   redis.get(req.originalUrl, (err, reply) => {
@@ -256,7 +256,7 @@ app.get('/pages', function(req, res){
  *
  * @apiParam  {String} pageId Unique page ID.
  */
-app.get('/pages/:pageId', function(req, res){
+router.get('/pages/:pageId', function(req, res){
   let expire = 30;
   res.setHeader('Content-Type', 'application/json');
   redis.get(req.originalUrl, (err, reply) => {
@@ -280,4 +280,4 @@ app.get('/pages/:pageId', function(req, res){
   })
 });
 
-module.exports = app;
+module.exports = router;
