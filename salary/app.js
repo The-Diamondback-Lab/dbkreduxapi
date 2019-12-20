@@ -1,26 +1,25 @@
 const express = require('express')
-const async = require('async')
 
 const cors = require('cors')
 
-const app = express()
-app.use(cors())
+const router = express.Router();
+router.use(cors())
 
-app.get('/salary', (req, res) => { 
+router.get('/salary', (req, res) => {
     res.redirect("https://api.dbknews.com/#tag-salary")
 })
 
-app.get('/salary/year/:year', async (req, res) => { 
+router.get('/salary/year/:year', async (req, res) => {
     let query = buildQuery(req)
     let countQuery = buildQuery(req, "count")
-    
+
     let results = await runQuery(res, query.string, query.params)
     let count = await runQuery(res, countQuery.string, countQuery.params)
-    
+
     sendResponse(res, 200, { data: results, count: count[0]["COUNT(*)"] })
 })
 
-app.get('/salary/years', async (req, res) => {
+router.get('/salary/years', async (req, res) => {
     let tableQuery = {
         string: "SHOW TABLES",
         params: []
@@ -32,10 +31,10 @@ app.get('/salary/years', async (req, res) => {
 
 /**
  * Takes in a request object and builds a SQL query for the Salary Guide database.
- * 
+ *
  * @param {object} req - Express request variable.
  * @param {string} type - Define what kind of query to build (results or count)
- * 
+ *
  */
 let buildQuery = (req, type="results") => {
     let PAGESIZE = 10
@@ -81,7 +80,7 @@ let buildQuery = (req, type="results") => {
         else{
             queryString += ` ORDER BY REPLACE(??,' ','') ` //ignore whitespace while sorting
             queryParams.push(sortby)
-        }        
+        }
     }
 
     //By default, SQL orders by ASC. If the user specifies DESC, order by that instead.
@@ -101,7 +100,7 @@ let buildQuery = (req, type="results") => {
 
 /**
  * Runs a SQL query and returns the result, otherwise sends an error.
- * 
+ *
  * @param {object} res - Express response variable.
  * @param {string} query - Query string to pass into SQL.
  * @param {array} params - Objects to substitute into the query.
@@ -120,8 +119,8 @@ let runQuery = async function (res, query, params) {
 
 
 /**
- * Sends a response using Express. 
- * 
+ * Sends a response using Express.
+ *
  * @param {object} res - Express response variable.
  * @param {int} status - Status code to return.
  * @param {string} message - Message to return with code.
@@ -132,7 +131,7 @@ let sendResponse = (res, status, message) => {
 
 /**
  * Parses the failed response object from SQL into a meaningful error response.
- * 
+ *
  * @param {object} res - Express response variable
  * @param {object} error - Error object from SQL execution.
  */
@@ -145,4 +144,4 @@ let handleError = (res, error) => {
     //}
 }
 
-module.exports = app
+module.exports = router
