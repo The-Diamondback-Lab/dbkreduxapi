@@ -136,12 +136,7 @@ let sendResponse = (res, status, message) => {
  * @param {object} error - Error object from SQL execution.
  */
 let handleError = (res, error) => {
-  // if (error.code === 'ER_NO_SUCH_TABLE') {
-  //   sendResponse(res, 500, {message: 'Invalid Year Supplied'})
-  // }
-  // else {
-  sendResponse(res, 500, error)
-  //}
+  sendResponse(res, 500, error);
 }
 
 module.exports = router
