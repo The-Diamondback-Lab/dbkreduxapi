@@ -25,8 +25,6 @@ if (keyData == null || certData == null) {
   app.listen(port, () => {
     console.log(`App is listening on port ${port}.`)
   });
-  cert.pem
-  privkey.pem
 } else {
   // https://stackoverflow.com/a/11805909
   https.createServer({
