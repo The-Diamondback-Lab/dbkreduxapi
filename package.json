@@ -9,6 +9,7 @@
   },
   "main": "index.js",
   "scripts": {
+    "dev": "cross-env PORT=8080 node server.js",
     "start-news": "node news/app.local.js",
     "start-salary": "node salary/app.local.js",
     "build": "apidoc -e node_modules/"
