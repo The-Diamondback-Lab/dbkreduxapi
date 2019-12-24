@@ -26,6 +26,7 @@ if (keyData == null || certData == null) {
     console.log(`App is listening on port ${port}.`)
   });
 } else {
+  // https://stackoverflow.com/a/11805909
   https.createServer({
     key: keyData,
     cert: certData
