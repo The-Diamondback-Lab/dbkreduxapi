@@ -331,20 +331,6 @@ function replaceUrl(input) {
   return input;
 }
 
-async function getFeaturedImage(url) {
-  const featImageJson = await request(url);
-  return featImageJson;
-}
-
-async function getAuthorName(url) {
-  const author = await request(url);
-  return {
-    'id': author.id,
-    'name': author.name,
-    'link': author.link
-  };
-}
-
 /*
   Based on a category slug, return all category IDs that are in that category's hiearchy
 */
@@ -364,20 +350,6 @@ async function getAllCategoryIds(id, cats) {
   const req_url = categories_url + '?parent=' + id;
   const categoryObj = await request(req_url);
   categoryObj.forEach(c => getAllCategoryIds(c.id, cats));
-}
-
-async function getCategorySlug(id) {
-  const req_url = categories_url + '/' + id;
-  const categoryObj = await request(req_url);
-  return categoryObj.slug;
-}
-
-async function categoryIdsToSlugs(categoryIds) {
-  const slug_categories = categoryIds.map(async (categoryId) => {
-    const slug = await getCategorySlug(categoryId);
-    return slug;
-  });
-  return Promise.all(slug_categories);
 }
 
 async function getAuthorId(slug) {
