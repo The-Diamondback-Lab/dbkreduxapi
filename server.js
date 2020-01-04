@@ -1,6 +1,7 @@
 const https = require('https');
 const fs = require('fs');
 const express = require('express');
+const compression = require('compression');
 const newsRouter = require('./news/app');
 const salaryRouter = require('./salary/app');
 
@@ -8,6 +9,7 @@ require('dotenv').config();
 
 const app = express();
 
+app.use(compression());
 app.use(newsRouter);
 app.use(salaryRouter);
 
