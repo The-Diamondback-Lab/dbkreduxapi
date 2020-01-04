@@ -22,6 +22,9 @@ pool.getConnection((err, connection) => {
       }
       if (err.code === 'ECONNREFUSED') {
           console.error('Database connection was refused.')
+      } else {
+        console.error('Unexpected error');
+        console.error(err);
       }
   }
 
@@ -29,6 +32,6 @@ pool.getConnection((err, connection) => {
   return
 })
 
-pool.query = util.promisify(pool.query) 
+pool.query = util.promisify(pool.query)
 
 module.exports = pool
