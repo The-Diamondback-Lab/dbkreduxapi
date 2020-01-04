@@ -8,11 +8,11 @@ const swaggerDocument = require('../swagger.json');
 
 router.use(cors());
 
-router.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
+router.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 router.get('/', (req, res) => {
-  res.redirect('/docs')
-})
+  res.redirect('/docs');
+});
 
 /**
  * @api {get} /articles?preview={boolean} Gets a list of DBK articles
@@ -48,18 +48,18 @@ router.get('/articles', function (req, res){
       let orderby = req.query.orderby;
 
       wp_api.getArticles(articles, page, category, author, search, preview, order, orderby)
-      .then(data => {
-        if (typeof data.response_code === 'undefined'){
-          redis.setex(req.originalUrl, expire, JSON.stringify(data));
-          res.send(data);
-        }
-        else { //don't cache non-200 responses
-          res.status(data.response_code);
-          res.send(data);
-        }
-      });
+        .then(data => {
+          if (typeof data.response_code === 'undefined'){
+            redis.setex(req.originalUrl, expire, JSON.stringify(data));
+            res.send(data);
+          }
+          else { //don't cache non-200 responses
+            res.status(data.response_code);
+            res.send(data);
+          }
+        });
     }
-  })
+  });
 });
 
 
@@ -80,18 +80,18 @@ router.get('/articles/:articleId', function(req, res){
     else{
       let articleId = req.params.articleId;
       wp_api.getArticle(articleId)
-      .then(data => {
-        if (typeof data.response_code === 'undefined'){
-          redis.setex(req.originalUrl, expire, JSON.stringify(data));
-          res.send(data);
-        }
-        else { //don't cache non-200 responses
-          res.status(data.response_code);
-          res.send(data);
-        }
-      });
+        .then(data => {
+          if (typeof data.response_code === 'undefined'){
+            redis.setex(req.originalUrl, expire, JSON.stringify(data));
+            res.send(data);
+          }
+          else { //don't cache non-200 responses
+            res.status(data.response_code);
+            res.send(data);
+          }
+        });
     }
-  })
+  });
 });
 
 
@@ -101,7 +101,7 @@ router.get('/articles/:articleId', function(req, res){
  * @apiGroup Articles
  */
 router.get('/featured_article', function(req, res){
-  let expire = 60
+  let expire = 60;
   res.setHeader('Content-Type', 'application/json');
   redis.get(req.originalUrl, (err, reply) => {
     if (reply){
@@ -109,18 +109,18 @@ router.get('/featured_article', function(req, res){
     }
     else{
       wp_api.getFeaturedArticle()
-      .then(data => {
-        if (typeof data.response_code === 'undefined'){
-          redis.setex(req.originalUrl, expire, JSON.stringify(data));
-          res.send(data);
-        }
-        else { //don't cache non-200 responses
-          res.status(data.response_code);
-          res.send(data);
-        }
-      });
+        .then(data => {
+          if (typeof data.response_code === 'undefined'){
+            redis.setex(req.originalUrl, expire, JSON.stringify(data));
+            res.send(data);
+          }
+          else { //don't cache non-200 responses
+            res.status(data.response_code);
+            res.send(data);
+          }
+        });
     }
-  })
+  });
 });
 
 
@@ -141,18 +141,18 @@ router.get('/menu/:id', function (req, res){
     else{
       let menu_id = req.params.id;
       wp_api.getMenu(menu_id)
-      .then(data => {
-        if (typeof data.response_code === 'undefined'){
-          redis.setex(req.originalUrl, expire, JSON.stringify(data));
-          res.send(data);
-        }
-        else { //don't cache non-200 responses
-          res.status(data.response_code);
-          res.send(data);
-        }
-      });
+        .then(data => {
+          if (typeof data.response_code === 'undefined'){
+            redis.setex(req.originalUrl, expire, JSON.stringify(data));
+            res.send(data);
+          }
+          else { //don't cache non-200 responses
+            res.status(data.response_code);
+            res.send(data);
+          }
+        });
     }
-  })
+  });
 });
 
 /**
@@ -163,7 +163,7 @@ router.get('/menu/:id', function (req, res){
  * @apiParam  {String} categoryId Unique category ID.
  */
 router.get('/category/:id', function (req, res){
-  let expire = 300
+  let expire = 300;
   res.setHeader('Content-Type', 'application/json');
   redis.get(req.originalUrl, (err, reply) => {
     if (reply){
@@ -172,18 +172,18 @@ router.get('/category/:id', function (req, res){
     else{
       let category_id = req.params.id;
       wp_api.getCategory(category_id)
-      .then(data => {
-        if (typeof data.response_code === 'undefined'){
-          redis.setex(req.originalUrl, expire, JSON.stringify(data));
-          res.send(data);
-        }
-        else { //don't cache non-200 responses
-          res.status(data.response_code);
-          res.send(data);
-        }
-      });
+        .then(data => {
+          if (typeof data.response_code === 'undefined'){
+            redis.setex(req.originalUrl, expire, JSON.stringify(data));
+            res.send(data);
+          }
+          else { //don't cache non-200 responses
+            res.status(data.response_code);
+            res.send(data);
+          }
+        });
     }
-  })
+  });
 });
 
 /**
@@ -203,18 +203,18 @@ router.get('/author/:id', function(req, res){
     else{
       let author_id = req.params.id;
       wp_api.getAuthor(author_id)
-      .then(data => {
-        if (typeof data.response_code === 'undefined'){
-          redis.setex(req.originalUrl, expire, JSON.stringify(data));
-          res.send(data);
-        }
-        else { //don't cache non-200 responses
-          res.status(data.response_code);
-          res.send(data);
-        }
-      });
+        .then(data => {
+          if (typeof data.response_code === 'undefined'){
+            redis.setex(req.originalUrl, expire, JSON.stringify(data));
+            res.send(data);
+          }
+          else { //don't cache non-200 responses
+            res.status(data.response_code);
+            res.send(data);
+          }
+        });
     }
-  })
+  });
 });
 
 /**
@@ -235,18 +235,18 @@ router.get('/pages', function(req, res){
     else{
       let search = req.query.search;
       wp_api.getPages(search)
-      .then(data => {
-        if (typeof data.response_code === 'undefined'){
-          redis.setex(req.originalUrl, expire, JSON.stringify(data));
-          res.send(data);
-        }
-        else { //don't cache non-200 responses
-          res.status(data.response_code);
-          res.send(data);
-        }
-      });
+        .then(data => {
+          if (typeof data.response_code === 'undefined'){
+            redis.setex(req.originalUrl, expire, JSON.stringify(data));
+            res.send(data);
+          }
+          else { //don't cache non-200 responses
+            res.status(data.response_code);
+            res.send(data);
+          }
+        });
     }
-  })
+  });
 });
 
 /**
@@ -266,18 +266,18 @@ router.get('/pages/:pageId', function(req, res){
     else{
       let pageId = req.params.pageId;
       wp_api.getPage(pageId)
-      .then(data => {
-        if (typeof data.response_code === 'undefined'){
-          redis.setex(req.originalUrl, expire, JSON.stringify(data));
-          res.send(data);
-        }
-        else { //don't cache non-200 responses
-          res.status(data.response_code);
-          res.send(data);
-        }
-      });
+        .then(data => {
+          if (typeof data.response_code === 'undefined'){
+            redis.setex(req.originalUrl, expire, JSON.stringify(data));
+            res.send(data);
+          }
+          else { //don't cache non-200 responses
+            res.status(data.response_code);
+            res.send(data);
+          }
+        });
     }
-  })
+  });
 });
 
 module.exports = router;

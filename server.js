@@ -13,7 +13,7 @@ app.use(compression());
 app.use(newsRouter);
 app.use(salaryRouter);
 
-const port = process.env.PORT || 8080
+const port = process.env.PORT || 8080;
 
 let keyPath = process.env.PRIVATE_KEY_PATH;
 let certPath = process.env.CERTIFICATE_PATH;
@@ -26,7 +26,7 @@ let certData = certPath ? fs.readFileSync(certPath) : null;
 if (keyData == null || certData == null) {
   console.warn('Not using a certificate');
   app.listen(port, () => {
-    console.log(`App is listening on port ${port}.`)
+    console.log(`App is listening on port ${port}.`);
   });
 } else {
   console.log('Certificate loaded');
@@ -36,5 +36,5 @@ if (keyData == null || certData == null) {
     cert: certData
   }, app).listen(port, () =>
     console.log(`App is listening on port ${port}.`)
-  )
+  );
 }
