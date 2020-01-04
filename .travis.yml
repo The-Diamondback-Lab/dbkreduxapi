@@ -4,8 +4,6 @@ node_js:
 branches:
   only:
   - development
-before_deploy:
-  - node
 deploy:
   provider: elasticbeanstalk
   access_key_id: ${AWS_ACCESS_KEY_ID}
