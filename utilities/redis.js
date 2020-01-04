@@ -10,11 +10,11 @@ let redisClient = redis.createClient(redisConf);
 redisClient.auth(process.env.REDISPWD);
 
 redisClient.on('connect', function() {
-  console.log('Redis client connected');
+  console.log('[redis] Client connected');
 });
 
 redisClient.on("error", function (err) {
-  console.log("Error " + err);
+  console.log("[redis] Error: " + err);
 });
 
 module.exports = redisClient;
