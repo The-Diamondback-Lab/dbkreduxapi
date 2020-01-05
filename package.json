@@ -1,5 +1,5 @@
 {
-  "name": "dbk-api",
+  "name": "dbkreduxapi",
   "version": "1.0.0",
   "description": "API to retrieve articles and other content from the DBK site.",
   "apidoc": {
@@ -7,22 +7,21 @@
     "title": "API - The Diamondback",
     "url": "api.dbknews.com"
   },
-  "main": "index.js",
   "scripts": {
-    "dev": "cross-env PORT=8080 node server.js",
-    "start": "cross-env NODE_ENV=production node server.js",
+    "lint": "eslint --fix src/**/*.js",
+    "dev": "cross-env PORT=8080 node ./src/server.js",
+    "start": "cross-env NODE_ENV=production node ./src/server.js",
     "build-docs": "apidoc -e node_modules/"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/The-Diamondback-Lab/article-api.git"
+    "url": "git+https://github.com/The-Diamondback-Lab/dbkreduxapi.git"
   },
   "author": "The DBK Lab",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/The-Diamondback-Lab/article-api/issues"
+    "url": "https://github.com/The-Diamondback-Lab/dbkreduxapi/issues"
   },
-  "homepage": "https://github.com/The-Diamondback-Lab/article-api#readme",
   "dependencies": {
     "apidoc": "^0.17.7",
     "bunyan": "^1.8.12",
