@@ -1,7 +1,9 @@
 const express = require('express');
 const cors = require('cors');
-
+const { createLogger } = require('../utilities/logger');
 const db = require('../utilities/db');
+
+const errorLogger = createLogger('dbk-salary');
 
 // Page size and columns for SQL table
 const PAGESIZE = 10;

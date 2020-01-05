@@ -1,7 +1,9 @@
 const express = require('express');
 const cors = require('cors');
 const { RedisError } = require('redis-errors');
+const { createLogger } = require('../utilities/logger');
 
+const errorLogger = createLogger('dbk-news');
 const wpApi = require('../utilities/wordpress-service.js');
 const redis = require('../utilities/redis');
 
