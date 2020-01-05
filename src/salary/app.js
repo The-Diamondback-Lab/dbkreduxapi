@@ -3,6 +3,10 @@ const cors = require('cors');
 
 const db = require('../utilities/db');
 
+// Page size and columns for SQL table
+const PAGESIZE = 10;
+const COLUMNS = ['Division', 'Department', 'Title', 'Employee', 'Salary'];
+
 // eslint-disable-next-line new-cap
 const router = express.Router();
 router.use(cors());
@@ -12,8 +16,12 @@ router.get('/salary', (req, res) => {
 });
 
 router.get('/salary/year/:year', async (req, res) => {
-  let query = buildQuery(req);
-  let countQuery = buildQuery(req, 'count');
+  let query = buildQuery(req, res);
+  let countQuery = buildQuery(req, res, 'count');
+
+  if (query == null || countQuery == null) {
+    return;
+  }
 
   let results = await runQuery(res, query.string, query.params);
   let count = await runQuery(res, countQuery.string, countQuery.params);
@@ -39,37 +47,42 @@ router.get('/salary/years', async (req, res) => {
 
 /**
  * Takes in a request object and builds a SQL query for the Salary Guide database.
+ * If no year is provided in the request parameters, then a 404 code is sent back.
  *
- * @param {object} req - Express request variable.
- * @param {string} type - Define what kind of query to build (results or count)
- *
+ * @param {Express.Request} req The request obect.
+ * @param {Express.Response} res The response object.
+ * @param {string} type The kind of query to build (results or count)
+ * @returns An object containing the query string and a list
+ * of parameters.
  */
-function buildQuery(req, type = 'results') {
-  let PAGESIZE = 10;
-  let COLUMNS = ['Division', 'Department', 'Title', 'Employee', 'Salary'];
-  let year = req.params.year;
+function buildQuery(req, res, type = 'results') {
+  let { year } = req.params;
+  let { page, search, sortby, order } = req.query;
+
   if (!year){
-    sendResponse(500, 'Invalid year parameter supplied.');
+    sendResponse(res, 404, 'Invalid year parameter supplied.');
+    return;
   }
-  let page = req.query.page;
+
   let offset = 0;
+
   if (page && !isNaN(page) && page >= 1){
-    offset = (page-1) * PAGESIZE;
+    offset = (page - 1) * PAGESIZE;
   }
 
   let queryString = 'SELECT * FROM ??';
+  let queryParams = [year + 'Data'];
+
   if (type === 'count') {
     queryString = 'SELECT COUNT(*) FROM ??';
   }
 
-  let queryParams = [year+'Data'];
-
-  let search = req.query.search;
   if (search) {
     queryString += ' WHERE ';
+
     COLUMNS.forEach((col, i) => {
-      queryString += ` ${col} LIKE ? ${i < COLUMNS.length-1 ? 'OR' : ''} `;
-      queryParams.push('%'+search+'%');
+      queryString += ` ${col} LIKE ? ${i < COLUMNS.length - 1 ? 'OR' : ''} `;
+      queryParams.push('%' + search + '%');
     });
   }
 
@@ -80,18 +93,12 @@ function buildQuery(req, type = 'results') {
     };
   }
 
-  let sortby = req.query.sortby;
   if (sortby) {
-    if (sortby.toLowerCase() === 'salary'){ //For sorting salaries, we need to parse the salary value into a number
-      queryString += 'ORDER BY CAST(REPLACE(REPLACE(salary,\'$\',\'\'),\',\',\'\') AS UNSIGNED) ';
-    } else {
-      queryString += ' ORDER BY REPLACE(??,\' \',\'\') '; //ignore whitespace while sorting
-      queryParams.push(sortby);
-    }
+    queryString += buildQuery$sort(sortby, queryParams);
   }
 
-  //By default, SQL orders by ASC. If the user specifies DESC, order by that instead.
-  if (req.query.order && req.query.order.toUpperCase() === 'DESC'){
+  // By default, SQL orders by ASC. If the user specifies DESC, order by that instead.
+  if (order != null && order.toUpperCase() === 'DESC'){
     queryString += ' DESC ';
   }
 
@@ -106,11 +113,27 @@ function buildQuery(req, type = 'results') {
 };
 
 /**
+ * Helper function for `buildQuery` to append a sorting query.
+ *
+ * @param {string} sortby
+ * @param {string[]} queryParams
+ * @returns {string}
+ */
+function buildQuery$sort(sortby, queryParams) {
+  if (sortby.toLowerCase() === 'salary') { // For sorting salaries, we need to parse the salary value into a number
+    return 'ORDER BY CAST(REPLACE(REPLACE(salary,\'$\',\'\'),\',\',\'\') AS UNSIGNED) ';
+  } else {
+    queryParams.push(sortBy);
+    return ' ORDER BY REPLACE(??,\' \',\'\') '; // Ignore whitespace while sorting
+  }
+}
+
+/**
  * Sends a response using Express.
  *
- * @param {object} res - Express response variable.
- * @param {int} status - Status code to return.
- * @param {string} message - Message to return with code.
+ * @param {Express.Response} res The response object.
+ * @param {int} status Status code to return.
+ * @param {string} message Message to return with code.
  */
 function sendResponse(res, status, message) {
   res.status(status).send(message);
@@ -119,8 +142,8 @@ function sendResponse(res, status, message) {
 /**
  * Parses the failed response object from SQL into a meaningful error response.
  *
- * @param {object} res - Express response variable
- * @param {object} error - Error object from SQL execution.
+ * @param {Express.Response} res The response object.
+ * @param {object} error Error object from SQL execution.
  */
 function handleError (res, error) {
   sendResponse(res, 500, error);
@@ -129,9 +152,9 @@ function handleError (res, error) {
 /**
  * Runs a SQL query and returns the result, otherwise sends an error.
  *
- * @param {object} res - Express response variable.
- * @param {string} query - Query string to pass into SQL.
- * @param {array} params - Objects to substitute into the query.
+ * @param {Express.Response} res The response object.
+ * @param {string} query Query string to pass into SQL.
+ * @param {array} params Objects to substitute into the query.
  */
 async function runQuery(res, query, params) {
   try {
