@@ -1,20 +1,12 @@
 const express = require('express');
-const router = express.Router();
 const cors = require('cors');
 
 const wpApi = require('../utilities/wordpress-service.js');
 const redis = require('../utilities/redis');
 
-const swaggerUi = require('swagger-ui-express');
-const swaggerDocument = require('../swagger.json');
+const router = express.Router();
 
 router.use(cors());
-
-router.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-
-router.get('/', (req, res) => {
-  res.redirect('/docs');
-});
 
 /**
  * @api {get} /articles?preview={boolean} Gets a list of DBK articles
