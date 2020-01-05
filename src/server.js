@@ -34,7 +34,6 @@ if (keyData == null || certData == null) {
   https.createServer({
     key: keyData,
     cert: certData
-  }, app).listen(port, () =>
-    console.log(`App is listening on port ${port}.`)
+  }, app).listen(port, () => console.log(`App is listening on port ${port}.`)
   );
 }

@@ -28,8 +28,9 @@ pool.getConnection((err, connection) => {
     }
   }
 
-  if (connection) connection.release();
-  return;
+  if (connection) {
+    connection.release();
+  }
 });
 
 pool.query = util.promisify(pool.query);

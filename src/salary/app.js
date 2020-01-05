@@ -16,7 +16,10 @@ router.get('/salary/year/:year', async (req, res) => {
   let results = await runQuery(res, query.string, query.params);
   let count = await runQuery(res, countQuery.string, countQuery.params);
 
-  sendResponse(res, 200, { data: results, count: count[0]['COUNT(*)'] });
+  sendResponse(res, 200, {
+    data: results,
+    count: count[0]['COUNT(*)']
+  });
 });
 
 router.get('/salary/years', async (req, res) => {
@@ -76,8 +79,7 @@ let buildQuery = (req, type='results') => {
   if (sortby) {
     if (sortby.toLowerCase() === 'salary'){ //For sorting salaries, we need to parse the salary value into a number
       queryString += 'ORDER BY CAST(REPLACE(REPLACE(salary,\'$\',\'\'),\',\',\'\') AS UNSIGNED) ';
-    }
-    else{
+    } else {
       queryString += ' ORDER BY REPLACE(??,\' \',\'\') '; //ignore whitespace while sorting
       queryParams.push(sortby);
     }
@@ -111,8 +113,7 @@ let runQuery = async function (res, query, params) {
   try {
     let results = await db.query(query, params);
     return results;
-  }
-  catch (err) {
+  } catch (err) {
     handleError(res, err);
   }
 };

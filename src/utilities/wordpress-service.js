@@ -105,8 +105,7 @@ exports.getFeaturedArticle = async function () {
       'featured_image': article.featured_image,
       'categories': article.categories
     };
-  }
-  catch (err) {
+  } catch (err) {
     return error('featured_article_not_found', 'Featured article not found.', 404);
   }
 };
@@ -259,8 +258,7 @@ function sanitizeArticle(article) {
         article: fallback_url,
         preview: fallback_url
       };
-    }
-    else{
+    } else {
       article.featured_image = {
         url: sizes.full.source_url,
         caption: caption,
