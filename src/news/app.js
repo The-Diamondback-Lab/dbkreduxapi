@@ -21,8 +21,6 @@ router.use(cors());
  * @apiParam  {String} [search] The search term to query articles by.
  * @apiParam  {String} [order] Order of the results. [author, date, modified, relevance, title]
  * @apiParam  {String} [orderby] How to order the results. [asc, desc]
-
- *
  */
 router.get('/articles', function (req, res){
   let expire = 60;
