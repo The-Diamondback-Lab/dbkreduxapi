@@ -115,7 +115,10 @@ rules:
     - warn
     - code: 100
       ignoreUrls: true
-  max-lines-per-function: warn
+  max-lines-per-function:
+    - warn
+    - skipBlankLines
+    - skipComments
   max-nested-callbacks: error
   max-statements-per-line: error
   multiline-ternary:
