@@ -1,7 +1,9 @@
 const express = require('express');
-
 const cors = require('cors');
 
+const db = require('../utilities/db');
+
+// eslint-disable-next-line new-cap
 const router = express.Router();
 router.use(cors());
 
@@ -27,8 +29,11 @@ router.get('/salary/years', async (req, res) => {
     string: 'SHOW TABLES',
     params: []
   };
+
   let tables = await runQuery(res, tableQuery.string, tableQuery.params);
+
   tables = tables.map(t => t.Tables_in_saldbinstance.replace('Data', ''));
+
   sendResponse(res, 200, { data: tables });
 });
 
@@ -39,7 +44,7 @@ router.get('/salary/years', async (req, res) => {
  * @param {string} type - Define what kind of query to build (results or count)
  *
  */
-let buildQuery = (req, type='results') => {
+function buildQuery(req, type = 'results') {
   let PAGESIZE = 10;
   let COLUMNS = ['Division', 'Department', 'Title', 'Employee', 'Salary'];
   let year = req.params.year;
@@ -101,34 +106,15 @@ let buildQuery = (req, type='results') => {
 };
 
 /**
- * Runs a SQL query and returns the result, otherwise sends an error.
- *
- * @param {object} res - Express response variable.
- * @param {string} query - Query string to pass into SQL.
- * @param {array} params - Objects to substitute into the query.
- */
-let runQuery = async function (res, query, params) {
-  let db = require('../utilities/db');
-
-  try {
-    let results = await db.query(query, params);
-    return results;
-  } catch (err) {
-    handleError(res, err);
-  }
-};
-
-
-/**
  * Sends a response using Express.
  *
  * @param {object} res - Express response variable.
  * @param {int} status - Status code to return.
  * @param {string} message - Message to return with code.
  */
-let sendResponse = (res, status, message) => {
+function sendResponse(res, status, message) {
   res.status(status).send(message);
-};
+}
 
 /**
  * Parses the failed response object from SQL into a meaningful error response.
@@ -136,8 +122,24 @@ let sendResponse = (res, status, message) => {
  * @param {object} res - Express response variable
  * @param {object} error - Error object from SQL execution.
  */
-let handleError = (res, error) => {
+function handleError (res, error) {
   sendResponse(res, 500, error);
-};
+}
+
+/**
+ * Runs a SQL query and returns the result, otherwise sends an error.
+ *
+ * @param {object} res - Express response variable.
+ * @param {string} query - Query string to pass into SQL.
+ * @param {array} params - Objects to substitute into the query.
+ */
+async function runQuery(res, query, params) {
+  try {
+    let results = await db.query(query, params);
+    return results;
+  } catch (err) {
+    handleError(res, err);
+  }
+}
 
 module.exports = router;
