@@ -1,18 +1,12 @@
 const express = require('express');
-const router = express.Router();
-const wp_api = require('../utilities/wordpress-service.js');
 const cors = require('cors');
+
+const wpApi = require('../utilities/wordpress-service.js');
 const redis = require('../utilities/redis');
-const swaggerUi = require('swagger-ui-express');
-const swaggerDocument = require('../swagger.json');
+
+const router = express.Router();
 
 router.use(cors());
-
-router.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-
-router.get('/', (req, res) => {
-  res.redirect('/docs');
-});
 
 /**
  * @api {get} /articles?preview={boolean} Gets a list of DBK articles
@@ -46,7 +40,7 @@ router.get('/articles', function (req, res){
       let order = req.query.order;
       let orderby = req.query.orderby;
 
-      wp_api.getArticles(articles, page, category, author, search, preview, order, orderby)
+      wpApi.getArticles(articles, page, category, author, search, preview, order, orderby)
         .then(data => {
           if (typeof data.response_code === 'undefined'){
             redis.setex(req.originalUrl, expire, JSON.stringify(data));
@@ -76,7 +70,7 @@ router.get('/articles/:articleId', function(req, res){
       res.send(reply);
     } else {
       let articleId = req.params.articleId;
-      wp_api.getArticle(articleId)
+      wpApi.getArticle(articleId)
         .then(data => {
           if (typeof data.response_code === 'undefined'){
             redis.setex(req.originalUrl, expire, JSON.stringify(data));
@@ -103,7 +97,7 @@ router.get('/featured_article', function(req, res){
     if (reply){
       res.send(reply);
     } else {
-      wp_api.getFeaturedArticle()
+      wpApi.getFeaturedArticle()
         .then(data => {
           if (typeof data.response_code === 'undefined'){
             redis.setex(req.originalUrl, expire, JSON.stringify(data));
@@ -133,7 +127,7 @@ router.get('/menu/:id', function (req, res){
       res.send(reply);
     } else {
       let menu_id = req.params.id;
-      wp_api.getMenu(menu_id)
+      wpApi.getMenu(menu_id)
         .then(data => {
           if (typeof data.response_code === 'undefined'){
             redis.setex(req.originalUrl, expire, JSON.stringify(data));
@@ -162,7 +156,7 @@ router.get('/category/:id', function (req, res){
       res.send(reply);
     } else {
       let category_id = req.params.id;
-      wp_api.getCategory(category_id)
+      wpApi.getCategory(category_id)
         .then(data => {
           if (typeof data.response_code === 'undefined'){
             redis.setex(req.originalUrl, expire, JSON.stringify(data));
@@ -191,7 +185,7 @@ router.get('/author/:id', function(req, res){
       res.send(reply);
     } else {
       let author_id = req.params.id;
-      wp_api.getAuthor(author_id)
+      wpApi.getAuthor(author_id)
         .then(data => {
           if (typeof data.response_code === 'undefined'){
             redis.setex(req.originalUrl, expire, JSON.stringify(data));
@@ -221,7 +215,7 @@ router.get('/pages', function(req, res){
       res.send(reply);
     } else {
       let search = req.query.search;
-      wp_api.getPages(search)
+      wpApi.getPages(search)
         .then(data => {
           if (typeof data.response_code === 'undefined'){
             redis.setex(req.originalUrl, expire, JSON.stringify(data));
@@ -250,7 +244,7 @@ router.get('/pages/:pageId', function(req, res){
       res.send(reply);
     } else {
       let pageId = req.params.pageId;
-      wp_api.getPage(pageId)
+      wpApi.getPage(pageId)
         .then(data => {
           if (typeof data.response_code === 'undefined'){
             redis.setex(req.originalUrl, expire, JSON.stringify(data));
