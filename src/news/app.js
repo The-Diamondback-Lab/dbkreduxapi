@@ -4,6 +4,17 @@ const cors = require('cors');
 const wpApi = require('../utilities/wordpress-service.js');
 const redis = require('../utilities/redis');
 
+const EXPIRE = {
+  ARTICLE_LIST: 60,
+  ARTICLE_SINGLE: 30,
+  ARTICLE_FEATURED: 60,
+  MENU_SINGLE: 300,
+  CATEGORY_SINGLE: 300,
+  AUTHOR_SINGLE: 300,
+  PAGE_LIST: 300,
+  PAGE_SINGLE: 30
+};
+
 const router = express.Router();
 
 router.use(cors());
@@ -23,7 +34,6 @@ router.use(cors());
  * @apiParam  {String} [orderby] How to order the results. [asc, desc]
  */
 router.get('/articles', function (req, res){
-  let expire = 60;
   res.setHeader('Content-Type', 'application/json');
   redis.get(req.originalUrl, (err, reply) => {
     if (reply){
@@ -41,7 +51,7 @@ router.get('/articles', function (req, res){
       wpApi.getArticles(articles, page, category, author, search, preview, order, orderby)
         .then(data => {
           if (typeof data.response_code === 'undefined'){
-            redis.setex(req.originalUrl, expire, JSON.stringify(data));
+            redis.setex(req.originalUrl, EXPIRE.ARTICLE_LIST, JSON.stringify(data));
             res.send(data);
           } else { //don't cache non-200 responses
             res.status(data.response_code);
@@ -61,7 +71,6 @@ router.get('/articles', function (req, res){
  * @apiParam  {String} articleId Unique article ID (slug).
  */
 router.get('/articles/:articleId', function(req, res){
-  let expire = 30;
   res.setHeader('Content-Type', 'application/json');
   redis.get(req.originalUrl, (err, reply) => {
     if (reply){
@@ -71,7 +80,7 @@ router.get('/articles/:articleId', function(req, res){
       wpApi.getArticle(articleId)
         .then(data => {
           if (typeof data.response_code === 'undefined'){
-            redis.setex(req.originalUrl, expire, JSON.stringify(data));
+            redis.setex(req.originalUrl, EXPIRE.ARTICLE_SINGLE, JSON.stringify(data));
             res.send(data);
           } else { //don't cache non-200 responses
             res.status(data.response_code);
@@ -89,7 +98,6 @@ router.get('/articles/:articleId', function(req, res){
  * @apiGroup Articles
  */
 router.get('/featured_article', function(req, res){
-  let expire = 60;
   res.setHeader('Content-Type', 'application/json');
   redis.get(req.originalUrl, (err, reply) => {
     if (reply){
@@ -98,7 +106,7 @@ router.get('/featured_article', function(req, res){
       wpApi.getFeaturedArticle()
         .then(data => {
           if (typeof data.response_code === 'undefined'){
-            redis.setex(req.originalUrl, expire, JSON.stringify(data));
+            redis.setex(req.originalUrl, EXPIRE.ARTICLE_FEATURED, JSON.stringify(data));
             res.send(data);
           } else { //don't cache non-200 responses
             res.status(data.response_code);
@@ -118,7 +126,6 @@ router.get('/featured_article', function(req, res){
  * @apiParam  {String} menuId Unique menu ID.
  */
 router.get('/menu/:id', function (req, res){
-  let expire = 300;
   res.setHeader('Content-Type', 'application/json');
   redis.get(req.originalUrl, (err, reply) => {
     if (reply){
@@ -128,7 +135,7 @@ router.get('/menu/:id', function (req, res){
       wpApi.getMenu(menu_id)
         .then(data => {
           if (typeof data.response_code === 'undefined'){
-            redis.setex(req.originalUrl, expire, JSON.stringify(data));
+            redis.setex(req.originalUrl, EXPIRE.MENU_SINGLE, JSON.stringify(data));
             res.send(data);
           } else { //don't cache non-200 responses
             res.status(data.response_code);
@@ -147,7 +154,6 @@ router.get('/menu/:id', function (req, res){
  * @apiParam  {String} categoryId Unique category ID.
  */
 router.get('/category/:id', function (req, res){
-  let expire = 300;
   res.setHeader('Content-Type', 'application/json');
   redis.get(req.originalUrl, (err, reply) => {
     if (reply){
@@ -157,7 +163,7 @@ router.get('/category/:id', function (req, res){
       wpApi.getCategory(category_id)
         .then(data => {
           if (typeof data.response_code === 'undefined'){
-            redis.setex(req.originalUrl, expire, JSON.stringify(data));
+            redis.setex(req.originalUrl, EXPIRE.CATEGORY_SINGLE, JSON.stringify(data));
             res.send(data);
           } else { //don't cache non-200 responses
             res.status(data.response_code);
@@ -176,7 +182,6 @@ router.get('/category/:id', function (req, res){
  * @apiParam  {String} authorId Unique author ID.
  */
 router.get('/author/:id', function(req, res){
-  let expire = 300;
   res.setHeader('Content-Type', 'application/json');
   redis.get(req.originalUrl, (err, reply) => {
     if (reply){
@@ -186,7 +191,7 @@ router.get('/author/:id', function(req, res){
       wpApi.getAuthor(author_id)
         .then(data => {
           if (typeof data.response_code === 'undefined'){
-            redis.setex(req.originalUrl, expire, JSON.stringify(data));
+            redis.setex(req.originalUrl, EXPIRE.AUTHOR_SINGLE, JSON.stringify(data));
             res.send(data);
           } else { //don't cache non-200 responses
             res.status(data.response_code);
@@ -206,7 +211,6 @@ router.get('/author/:id', function(req, res){
  *
  */
 router.get('/pages', function(req, res){
-  let expire = 300;
   res.setHeader('Content-Type', 'application/json');
   redis.get(req.originalUrl, (err, reply) => {
     if (reply){
@@ -216,7 +220,7 @@ router.get('/pages', function(req, res){
       wpApi.getPages(search)
         .then(data => {
           if (typeof data.response_code === 'undefined'){
-            redis.setex(req.originalUrl, expire, JSON.stringify(data));
+            redis.setex(req.originalUrl, EXPIRE.PAGE_LIST, JSON.stringify(data));
             res.send(data);
           } else { //don't cache non-200 responses
             res.status(data.response_code);
@@ -235,7 +239,6 @@ router.get('/pages', function(req, res){
  * @apiParam  {String} pageId Unique page ID.
  */
 router.get('/pages/:pageId', function(req, res){
-  let expire = 30;
   res.setHeader('Content-Type', 'application/json');
   redis.get(req.originalUrl, (err, reply) => {
     if (reply){
@@ -245,7 +248,7 @@ router.get('/pages/:pageId', function(req, res){
       wpApi.getPage(pageId)
         .then(data => {
           if (typeof data.response_code === 'undefined'){
-            redis.setex(req.originalUrl, expire, JSON.stringify(data));
+            redis.setex(req.originalUrl, EXPIRE.PAGE_SINGLE, JSON.stringify(data));
             res.send(data);
           } else { //don't cache non-200 responses
             res.status(data.response_code);
