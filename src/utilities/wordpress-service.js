@@ -15,39 +15,49 @@ const pages_url = `${wp_url_secure}/wp-json/wp/v2/pages`;
 /** FUNCTIONS USED BY APP.JS **/
 
 exports.getArticles = async function (limitArticles, page, category, author, search, prev, order, orderby) {
-  var url = all_posts_url;
+  let url = all_posts_url;
   let preview = false;
+
   if (typeof limitArticles !== 'undefined') {
     url += 'per_page=' + limitArticles + '&';
   }
+
   if (typeof page !== 'undefined') {
     url += 'page=' + page + '&';
   }
+
   if (typeof category !== 'undefined') {
     try {
       let categoryIds = await getCategoryId(category);
+
       url += 'categories=' + categoryIds + '&';
     } catch (err) {
       return error('invalid_category_name', `Invalid category name '${category}'.`, 400);
     }
   }
+
   if (typeof author !== 'undefined') {
     try {
       let authorId = await getAuthorId(author);
+
       url += 'author=' + authorId + '&';
     } catch (err) {
       return error('invalid_author_id', `Invalid author ID '${author}'.`, 400);
     }
   }
+
   if (typeof search !== 'undefined') {
     url += 'search=' + search + '&';
   }
+
   if (typeof order !== 'undefined') {
     url += 'order=' + order + '&';
   }
+
   if (typeof orderby != 'undefined') {
     url += 'orderby=' + orderby;
   }
+
   if (typeof prev != 'undefined') {
     preview = (prev === 'true');
   }
@@ -57,9 +67,12 @@ exports.getArticles = async function (limitArticles, page, category, author, sea
   if (typeof raw.code !== 'undefined' && raw.code === 'rest_post_invalid_page_number') {
     return error('invalid_page_number', 'Page number is out of range', 400);
   }
+
   const resp = raw.map((ele) => {
-    var article = sanitizeArticle(ele);
-    if (preview) { //return only necessary fields if preview flag is enabled
+    let article = sanitizeArticle(ele);
+
+    // Only return necessary fields if preview flag is enabled, otherwise the full response
+    if (preview) {
       return {
         'id': article.id,
         'title': article.title,
@@ -71,20 +84,23 @@ exports.getArticles = async function (limitArticles, page, category, author, sea
         'featured_image': article.featured_image,
         'categories': article.categories
       };
-    } else { //return full response
+    } else {
       return article;
     }
   });
+
   return resp;
 };
 
 exports.getArticle = async function (articleId) {
   articleId = articleId.trim();
+
   let url = all_posts_url + 'slug=' + articleId;
 
   try {
-    const raw = await request(url);
-    var article = raw[0];
+    let raw = await request(url);
+    let article = raw[0];
+
     return sanitizeArticle(article);
   } catch (err) {
     return error('article_not_found', `Invalid article ID '${articleId}'.`, 404);
@@ -93,8 +109,9 @@ exports.getArticle = async function (articleId) {
 
 exports.getFeaturedArticle = async function () {
   try {
-    var article = await request(featured_post_url);
+    let article = await request(featured_post_url);
     article = sanitizeArticle(article[0]);
+
     return {
       'id': article.id,
       'title': article.title,
@@ -113,10 +130,12 @@ exports.getFeaturedArticle = async function () {
 
 exports.getMenu = async function (menuName) {
   try {
-    var allMenus = await request(menu_url);
+    let allMenus = await request(menu_url);
     allMenus = allMenus.find(menu => menu.name === menuName);
-    var url = (menu_url + '/' + allMenus.ID);
-    var menuObj = await request(url);
+
+    let url = (menu_url + '/' + allMenus.ID);
+    let menuObj = await request(url);
+
     menuObj.items.forEach(
       menuItem => {
         if (menuItem.type !== 'custom') {
@@ -124,7 +143,9 @@ exports.getMenu = async function (menuName) {
         }
       }
     );
+
     delete menuObj.meta;
+
     return menuObj;
   } catch (err) {
     return error('menu_not_found', `Invalid menu ID '${menuName}'.`, 404);
@@ -133,10 +154,11 @@ exports.getMenu = async function (menuName) {
 
 exports.getCategory = async function (categoryName) {
   categoryName = categoryName.trim();
-  var url = categories_url + '?slug=' + categoryName;
+
+  let url = categories_url + '?slug=' + categoryName;
 
   try {
-    var category = await request(url);
+    let category = await request(url);
     category = category[0];
 
     //replace parent ID with slug
@@ -144,9 +166,10 @@ exports.getCategory = async function (categoryName) {
       category.parent = null;
     } else {
       url = categories_url + '/' + category.parent;
-      const parentCategory = await request(url);
+      let parentCategory = await request(url);
       category.parent = parentCategory.slug;
     }
+
     return sanitizeCategory(category);
   } catch (err) {
     return error('category_not_found', `Invalid category ID '${categoryName}'.`, 404);
@@ -155,16 +178,20 @@ exports.getCategory = async function (categoryName) {
 
 exports.getAuthor = async function (authorName) {
   authorName = authorName.trim();
-  var url = users_url + '?slug=' + authorName;
+
+  let url = users_url + '?slug=' + authorName;
 
   try {
-    var author = await request(url);
+    let author = await request(url);
     author = author[0];
+
     if (author.user_twitter) {
       author.user_twitter = author.user_twitter.replace('@', '');
     }
+
     delete author._links;
     author = replaceUrl(author);
+
     return author;
   } catch (err) {
     return error('author_not_found', `Invalid author ID '${authorName}'.`, 404);
@@ -175,10 +202,14 @@ exports.getPages = async function (search) {
   if (typeof search === 'undefined') {
     search = '';
   }
-  var url = pages_url + '?search=' + search;
+
+  let url = pages_url + '?search=' + search;
+
   try {
-    var pages = await request(url);
+    let pages = await request(url);
+
     pages = pages.map((page) => sanitizePage(page));
+
     return pages;
   } catch (err) {
     return error('pages_bad_request', 'Invalid request for pages.', 400);
@@ -186,9 +217,11 @@ exports.getPages = async function (search) {
 };
 
 exports.getPage = async function (pageName) {
-  var url = pages_url + '?slug=' + pageName;
+  let url = pages_url + '?slug=' + pageName;
+
   try {
-    var pages = await request(url);
+    let pages = await request(url);
+
     return sanitizePage(pages[0]);
   } catch (err) {
     return error('page_not_found', `Invalid page ID '${pageName}'.`, 404);
@@ -199,7 +232,12 @@ exports.getPage = async function (pageName) {
 /** HELPER FUNCTIONS **/
 
 async function request(url) {
-  var raw = await fetch(url);
+  let raw = await fetch(url);
+
+  if (raw == null) {
+    throw raw;
+  }
+
   return await raw.json();
 }
 
@@ -232,10 +270,12 @@ function sanitizeArticle(article) {
   //retrieve author object
   article.author = article._embedded.author[0];
   article.author = replaceUrl(article.author);
+
   if (article.author.user_twitter){
     article.author.user_twitter = article.author.user_twitter.trim();
     article.author.user_twitter = article.author.user_twitter.replace('@', '');
   }
+
   delete article.author._links;
 
   //extract featured image link and caption
@@ -247,11 +287,13 @@ function sanitizeArticle(article) {
     if (featured_media_obj.sizes) {
       sizes = article._embedded['wp:featuredmedia'][0].media_details.sizes;
     }
+
     if (featured_media_obj[0].caption) {
       caption = article._embedded['wp:featuredmedia'][0].caption.rendered;
     }
 
     let fallback_url = article._embedded['wp:featuredmedia'][0].source_url;
+
     if (!sizes) {
       article.featured_image = {
         url: fallback_url,
@@ -273,6 +315,7 @@ function sanitizeArticle(article) {
   article.categories = article._embedded['wp:term'][0];
   article.categories = article.categories.map(cat => {
     cat = replaceUrl(cat);
+
     return {
       id: cat.slug,
       name: cat.name,
@@ -324,6 +367,7 @@ function replaceUrl(input) {
   if (!input.link) {
     return;
   }
+
   input.link = input.link.replace(wp_ip, "");
   input.link = input.link.replace(wp_url_old, "");
   input.link = input.link.replace(wp_ip_secure, "");
@@ -334,28 +378,33 @@ function replaceUrl(input) {
   Based on a category slug, return all category IDs that are in that category's hiearchy
 */
 async function getCategoryId(slug) {
-  const req_url = categories_url + '?slug=' + slug;
-  const categoryResp = await fetch(req_url);
-  const categoryObj = await categoryResp.json();
-  var root = categoryObj[0].id;
-  var cats = [];
+  let req_url = categories_url + '?slug=' + slug;
+  let categoryResp = await fetch(req_url);
+  let categoryObj = await categoryResp.json();
+  let root = categoryObj[0].id;
+  let cats = [];
+
   await getAllCategoryIds(root, cats);
+
   return cats;
 }
 
 
 async function getAllCategoryIds(id, cats) {
+  let req_url = categories_url + '?parent=' + id;
+  let categoryObj = await request(req_url);
+
   cats.push(id);
-  const req_url = categories_url + '?parent=' + id;
-  const categoryObj = await request(req_url);
   categoryObj.forEach(c => getAllCategoryIds(c.id, cats));
 }
 
 async function getAuthorId(slug) {
-  const req_url = users_url + '?slug=' + slug;
-  const usersObj = await request(req_url);
+  let req_url = users_url + '?slug=' + slug;
+  let usersObj = await request(req_url);
+
   if (usersObj.length === 0) {
     throw Error('users object is empty');
+  } else {
+    return usersObj[0].id;
   }
-  return usersObj[0].id;
 }
