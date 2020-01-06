@@ -1,15 +1,16 @@
 const fetch = require('node-fetch');
 
-const wp_ip = "http://54.196.232.70";
+const wp_url_secure = 'https://wp.dbknews.com';
 const wp_url_old = "https://wordpress.dbknews.com";
+const wp_ip = "http://54.196.232.70";
 const wp_ip_secure = "https://54.196.232.70";
 
-const all_posts_url = `${wp_ip}/wp-json/wp/v2/posts?_embed&`;
-const featured_post_url = `${wp_ip}/wp-json/wp/v2/posts?featured-story=1&per_page=1&_embed`;
-const menu_url = `${wp_ip}/wp-json/wp-api-menus/v2/menus`;
-const categories_url = `${wp_ip}/wp-json/wp/v2/categories`;
-const users_url = `${wp_ip}/wp-json/wp/v2/users`;
-const pages_url = `${wp_ip}/wp-json/wp/v2/pages`;
+const all_posts_url = `${wp_url_secure}/wp-json/wp/v2/posts?_embed&`;
+const featured_post_url = `${wp_url_secure}/wp-json/wp/v2/posts?featured-story=1&per_page=1&_embed`;
+const menu_url = `${wp_url_secure}/wp-json/wp-api-menus/v2/menus`;
+const categories_url = `${wp_url_secure}/wp-json/wp/v2/categories`;
+const users_url = `${wp_url_secure}/wp-json/wp/v2/users`;
+const pages_url = `${wp_url_secure}/wp-json/wp/v2/pages`;
 
 /** FUNCTIONS USED BY APP.JS **/
 
