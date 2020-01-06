@@ -1,15 +1,15 @@
 const fetch = require('node-fetch');
 
-const wp_url = "http://54.196.232.70";
-const replace_wp_url = "https://wordpress.dbknews.com";
-const replace_wp_ip = "https://54.196.232.70";
+const wp_ip = "http://54.196.232.70";
+const wp_url_old = "https://wordpress.dbknews.com";
+const wp_ip_secure = "https://54.196.232.70";
 
-const all_posts_url = `${wp_url}/wp-json/wp/v2/posts?_embed&`;
-const featured_post_url = `${wp_url}/wp-json/wp/v2/posts?featured-story=1&per_page=1&_embed`;
-const menu_url = `${wp_url}/wp-json/wp-api-menus/v2/menus`;
-const categories_url = `${wp_url}/wp-json/wp/v2/categories`;
-const users_url = `${wp_url}/wp-json/wp/v2/users`;
-const pages_url = `${wp_url}/wp-json/wp/v2/pages`;
+const all_posts_url = `${wp_ip}/wp-json/wp/v2/posts?_embed&`;
+const featured_post_url = `${wp_ip}/wp-json/wp/v2/posts?featured-story=1&per_page=1&_embed`;
+const menu_url = `${wp_ip}/wp-json/wp-api-menus/v2/menus`;
+const categories_url = `${wp_ip}/wp-json/wp/v2/categories`;
+const users_url = `${wp_ip}/wp-json/wp/v2/users`;
+const pages_url = `${wp_ip}/wp-json/wp/v2/pages`;
 
 /** FUNCTIONS USED BY APP.JS **/
 
@@ -54,11 +54,11 @@ exports.getArticles = async function (limitArticles, page, category, author, sea
   const raw = await request(url);
 
   if (typeof raw.code !== 'undefined' && raw.code === 'rest_post_invalid_page_number') {
-    return error("invalid_page_number", "Page number is out of range", 400); 
+    return error("invalid_page_number", "Page number is out of range", 400);
   }
   const resp = raw.map((ele) => {
     var article = sanitizeArticle(ele);
-    if (preview) { //return only necessary fields if preview flag is enabled 
+    if (preview) { //return only necessary fields if preview flag is enabled
       return {
         "id": article.id,
         "title": article.title,
@@ -229,7 +229,7 @@ function sanitizeArticle(article) {
 
   article.title = article.title.rendered;
 
-  //retrieve author object 
+  //retrieve author object
   article.author = article._embedded.author[0];
   article.author = replaceUrl(article.author);
   if (article.author.user_twitter){
@@ -258,7 +258,7 @@ function sanitizeArticle(article) {
         caption: caption,
         article: fallback_url,
         preview: fallback_url
-      };  
+      };
     }
     else{
       article.featured_image = {
@@ -266,7 +266,7 @@ function sanitizeArticle(article) {
         caption: caption,
         article: (sizes.large ? sizes.large.source_url : sizes.full.source_url),
         preview: (sizes.medium ? sizes.medium.source_url : sizes.full.source_url)
-      };  
+      };
     }
   }
 
@@ -308,9 +308,9 @@ function sanitizePage(page) {
 }
 
 function sanitizeMenuUrls(menuItem) {
-  menuItem.url = menuItem.url.replace(wp_url, "");
-  menuItem.url = menuItem.url.replace(replace_wp_url, "");
-  menuItem.url = menuItem.url.replace(replace_wp_ip, "");
+  menuItem.url = menuItem.url.replace(wp_ip, "");
+  menuItem.url = menuItem.url.replace(wp_url_old, "");
+  menuItem.url = menuItem.url.replace(wp_ip_secure, "");
 
   if (menuItem.children) {
     menuItem.children.forEach(child => {
@@ -325,9 +325,9 @@ function replaceUrl(input) {
   if (!input.link) {
     return;
   }
-  input.link = input.link.replace(wp_url, "");
-  input.link = input.link.replace(replace_wp_url, "");
-  input.link = input.link.replace(replace_wp_ip, "");
+  input.link = input.link.replace(wp_ip, "");
+  input.link = input.link.replace(wp_url_old, "");
+  input.link = input.link.replace(wp_ip_secure, "");
   return input;
 }
 
