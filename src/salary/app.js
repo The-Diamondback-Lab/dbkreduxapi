@@ -62,7 +62,7 @@ function buildQuery(req, res, type = 'results') {
   let { page, search, sortby, order } = req.query;
 
   if (!year){
-    sendResponse(res, 404, 'Invalid year parameter supplied.');
+    sendResponse(res, 404, 'No year parameter supplied.');
     return;
   }
 
