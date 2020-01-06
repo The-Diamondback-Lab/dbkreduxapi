@@ -11,6 +11,7 @@ parserOptions:
 rules:
   # Possible Error
   no-await-in-loop: error
+  no-console: off
   no-dupe-else-if: error
   no-import-assign: error
   no-setter-return: error
@@ -117,8 +118,8 @@ rules:
       ignoreUrls: true
   max-lines-per-function:
     - warn
-    - skipBlankLines
-    - skipComments
+    - skipBlankLines: true
+      skipComments: true
   max-nested-callbacks: error
   max-statements-per-line: error
   multiline-ternary:
@@ -145,3 +146,33 @@ rules:
   semi: error
   semi-spacing: error
   semi-style: error
+  # ECMAScript 6
+  arrow-body-style: error
+  arrow-parens:
+    - error
+    - as-needed
+  arrow-spacing: error
+  generator-star-spacing: error
+  no-confusing-arrow:
+    - error
+    - allowParens: true
+  no-duplicate-imports: error
+  no-restricted-imports: warn
+  no-useless-computed-key: error
+  no-useless-constructor: error
+  no-var: error
+  object-shorthand: error
+  prefer-arrow-callback:
+    - error
+    - allowUnboundThis: true
+  prefer-const: warn
+  prefer-numeric-literals: warn
+  prefer-rest-params: warn
+  prefer-spread: warn
+  prefer-template: warn
+  require-yield: error
+  rest-spread-spacing: error
+  sort-imports: error
+  symbol-description: warn
+  template-curly-spacing: error
+  yield-star-spacing: error

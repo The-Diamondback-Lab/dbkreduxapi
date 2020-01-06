@@ -5,6 +5,7 @@ const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger.json');
 
 
+// eslint-disable-next-line new-cap
 const router = express.Router();
 
 router.use(cors());

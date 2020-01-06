@@ -17,11 +17,11 @@ app.use(salaryRouter);
 
 const port = process.env.PORT || 8080;
 
-let keyPath = process.env.PRIVATE_KEY_PATH;
-let certPath = process.env.CERTIFICATE_PATH;
+const keyPath = process.env.PRIVATE_KEY_PATH;
+const certPath = process.env.CERTIFICATE_PATH;
 
-let keyData = keyPath ? fs.readFileSync(keyPath) : null;
-let certData = certPath ? fs.readFileSync(certPath) : null;
+const keyData = keyPath ? fs.readFileSync(keyPath) : null;
+const certData = certPath ? fs.readFileSync(certPath) : null;
 
 // If private key or certificate weren't present, don't start the server
 // underneath HTTPS
