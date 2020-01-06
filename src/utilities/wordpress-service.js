@@ -1,36 +1,37 @@
 const fetch = require('node-fetch');
 
-const wp_url_secure = 'https://wp.dbknews.com';
-const wp_url_old = "https://wordpress.dbknews.com";
-const wp_ip = "http://54.196.232.70";
-const wp_ip_secure = "https://54.196.232.70";
+const wpUrlSecure = 'https://wp.dbknews.com';
+const wpUrlOld = "https://wordpress.dbknews.com";
+const wpIp = "http://54.196.232.70";
+const wpIpSecure = "https://54.196.232.70";
 
-const all_posts_url = `${wp_url_secure}/wp-json/wp/v2/posts?_embed&`;
-const featured_post_url = `${wp_url_secure}/wp-json/wp/v2/posts?featured-story=1&per_page=1&_embed`;
-const menu_url = `${wp_url_secure}/wp-json/wp-api-menus/v2/menus`;
-const categories_url = `${wp_url_secure}/wp-json/wp/v2/categories`;
-const users_url = `${wp_url_secure}/wp-json/wp/v2/users`;
-const pages_url = `${wp_url_secure}/wp-json/wp/v2/pages`;
+const allPostsUrl = `${wpUrlSecure}/wp-json/wp/v2/posts?_embed&`;
+const featuredPostUrl = `${wpUrlSecure}/wp-json/wp/v2/posts?featured-story=1&per_page=1&_embed`;
+const menuUrl = `${wpUrlSecure}/wp-json/wp-api-menus/v2/menus`;
+const categoriesUrl = `${wpUrlSecure}/wp-json/wp/v2/categories`;
+const usersUrl = `${wpUrlSecure}/wp-json/wp/v2/users`;
+const pagesUrl = `${wpUrlSecure}/wp-json/wp/v2/pages`;
 
 /** FUNCTIONS USED BY APP.JS **/
 
-exports.getArticles = async function (limitArticles, page, category, author, search, prev, order, orderby) {
-  let url = all_posts_url;
+exports.getArticles = async function (limitArticles, page, category, author,
+  search, prev, order, orderby) {
+  let url = allPostsUrl;
   let preview = false;
 
   if (typeof limitArticles !== 'undefined') {
-    url += 'per_page=' + limitArticles + '&';
+    url += `per_page=${limitArticles}&`;
   }
 
   if (typeof page !== 'undefined') {
-    url += 'page=' + page + '&';
+    url += `page=${page}&`;
   }
 
   if (typeof category !== 'undefined') {
     try {
-      let categoryIds = await getCategoryId(category);
+      const categoryIds = await getCategoryId(category);
 
-      url += 'categories=' + categoryIds + '&';
+      url += `categories=${categoryIds}&`;
     } catch (err) {
       return error('invalid_category_name', `Invalid category name '${category}'.`, 400);
     }
@@ -38,24 +39,24 @@ exports.getArticles = async function (limitArticles, page, category, author, sea
 
   if (typeof author !== 'undefined') {
     try {
-      let authorId = await getAuthorId(author);
+      const authorId = await getAuthorId(author);
 
-      url += 'author=' + authorId + '&';
+      url += `author=${authorId}&`;
     } catch (err) {
       return error('invalid_author_id', `Invalid author ID '${author}'.`, 400);
     }
   }
 
   if (typeof search !== 'undefined') {
-    url += 'search=' + search + '&';
+    url += `search=${search}&`;
   }
 
   if (typeof order !== 'undefined') {
-    url += 'order=' + order + '&';
+    url += `order=${order}&`;
   }
 
   if (typeof orderby != 'undefined') {
-    url += 'orderby=' + orderby;
+    url += `orderby=${orderby}`;
   }
 
   if (typeof prev != 'undefined') {
@@ -68,8 +69,8 @@ exports.getArticles = async function (limitArticles, page, category, author, sea
     return error('invalid_page_number', 'Page number is out of range', 400);
   }
 
-  const resp = raw.map((ele) => {
-    let article = sanitizeArticle(ele);
+  const resp = raw.map(ele => {
+    const article = sanitizeArticle(ele);
 
     // Only return necessary fields if preview flag is enabled, otherwise the full response
     if (preview) {
@@ -95,11 +96,11 @@ exports.getArticles = async function (limitArticles, page, category, author, sea
 exports.getArticle = async function (articleId) {
   articleId = articleId.trim();
 
-  let url = all_posts_url + 'slug=' + articleId;
+  const url = `${allPostsUrl}slug=${articleId}`;
 
   try {
-    let raw = await request(url);
-    let article = raw[0];
+    const raw = await request(url);
+    const article = raw[0];
 
     return sanitizeArticle(article);
   } catch (err) {
@@ -109,7 +110,7 @@ exports.getArticle = async function (articleId) {
 
 exports.getFeaturedArticle = async function () {
   try {
-    let article = await request(featured_post_url);
+    let article = await request(featuredPostUrl);
     article = sanitizeArticle(article[0]);
 
     return {
@@ -130,11 +131,11 @@ exports.getFeaturedArticle = async function () {
 
 exports.getMenu = async function (menuName) {
   try {
-    let allMenus = await request(menu_url);
+    let allMenus = await request(menuUrl);
     allMenus = allMenus.find(menu => menu.name === menuName);
 
-    let url = (menu_url + '/' + allMenus.ID);
-    let menuObj = await request(url);
+    const url = (`${menuUrl}/${allMenus.ID}`);
+    const menuObj = await request(url);
 
     menuObj.items.forEach(
       menuItem => {
@@ -155,7 +156,7 @@ exports.getMenu = async function (menuName) {
 exports.getCategory = async function (categoryName) {
   categoryName = categoryName.trim();
 
-  let url = categories_url + '?slug=' + categoryName;
+  let url = `${categoriesUrl}?slug=${categoryName}`;
 
   try {
     let category = await request(url);
@@ -165,8 +166,8 @@ exports.getCategory = async function (categoryName) {
     if (category.parent === 0) {
       category.parent = null;
     } else {
-      url = categories_url + '/' + category.parent;
-      let parentCategory = await request(url);
+      url = `${categoriesUrl}/${category.parent}`;
+      const parentCategory = await request(url);
       category.parent = parentCategory.slug;
     }
 
@@ -179,13 +180,14 @@ exports.getCategory = async function (categoryName) {
 exports.getAuthor = async function (authorName) {
   authorName = authorName.trim();
 
-  let url = users_url + '?slug=' + authorName;
+  const url = `${usersUrl}?slug=${authorName}`;
 
   try {
     let author = await request(url);
     author = author[0];
 
     if (author.user_twitter) {
+      // eslint-disable-next-line camelcase
       author.user_twitter = author.user_twitter.replace('@', '');
     }
 
@@ -203,12 +205,12 @@ exports.getPages = async function (search) {
     search = '';
   }
 
-  let url = pages_url + '?search=' + search;
+  const url = `${pagesUrl}?search=${search}`;
 
   try {
     let pages = await request(url);
 
-    pages = pages.map((page) => sanitizePage(page));
+    pages = pages.map(page => sanitizePage(page));
 
     return pages;
   } catch (err) {
@@ -217,10 +219,10 @@ exports.getPages = async function (search) {
 };
 
 exports.getPage = async function (pageName) {
-  let url = pages_url + '?slug=' + pageName;
+  const url = `${pagesUrl}?slug=${pageName}`;
 
   try {
-    let pages = await request(url);
+    const pages = await request(url);
 
     return sanitizePage(pages[0]);
   } catch (err) {
@@ -232,22 +234,24 @@ exports.getPage = async function (pageName) {
 /** HELPER FUNCTIONS **/
 
 async function request(url) {
-  let raw = await fetch(url);
+  const raw = await fetch(url);
 
   if (raw == null) {
     throw raw;
   }
 
-  return await raw.json();
+  return raw.json();
 }
 
+/* eslint-disable */
 function error(code, message, response_code) {
   return {
-    code: code,
-    message: message,
-    response_code: response_code
+    code,
+    message,
+    response_code
   };
 }
+/* eslint-enable */
 
 function sanitizeCategory(category) {
   category.id = category.slug;
@@ -272,39 +276,43 @@ function sanitizeArticle(article) {
   article.author = replaceUrl(article.author);
 
   if (article.author.user_twitter){
+    /* eslint-disable */
     article.author.user_twitter = article.author.user_twitter.trim();
     article.author.user_twitter = article.author.user_twitter.replace('@', '');
+    /* eslint-enable */
   }
 
   delete article.author._links;
 
   //extract featured image link and caption
   if (typeof article._embedded['wp:featuredmedia'] !== 'undefined') {
-    let featured_media_obj = article._embedded['wp:featuredmedia'];
+    const featuredMediaObj = article._embedded['wp:featuredmedia'];
     let sizes = '';
     let caption = '';
 
-    if (featured_media_obj.sizes) {
+    if (featuredMediaObj.sizes) {
       sizes = article._embedded['wp:featuredmedia'][0].media_details.sizes;
     }
 
-    if (featured_media_obj[0].caption) {
+    if (featuredMediaObj[0].caption) {
       caption = article._embedded['wp:featuredmedia'][0].caption.rendered;
     }
 
-    let fallback_url = article._embedded['wp:featuredmedia'][0].source_url;
+    const fallbackUrl = article._embedded['wp:featuredmedia'][0].source_url;
 
     if (!sizes) {
+      // eslint-disable-next-line camelcase
       article.featured_image = {
-        url: fallback_url,
-        caption: caption,
-        article: fallback_url,
-        preview: fallback_url
+        url: fallbackUrl,
+        caption,
+        article: fallbackUrl,
+        preview: fallbackUrl
       };
     } else {
+      // eslint-disable-next-line camelcase
       article.featured_image = {
         url: sizes.full.source_url,
-        caption: caption,
+        caption,
         article: (sizes.large ? sizes.large.source_url : sizes.full.source_url),
         preview: (sizes.medium ? sizes.medium.source_url : sizes.full.source_url)
       };
@@ -331,6 +339,7 @@ function sanitizeArticle(article) {
   delete article._embedded;
   delete article._links;
   delete article.guid;
+
   return article;
 }
 
@@ -350,9 +359,9 @@ function sanitizePage(page) {
 }
 
 function sanitizeMenuUrls(menuItem) {
-  menuItem.url = menuItem.url.replace(wp_ip, "");
-  menuItem.url = menuItem.url.replace(wp_url_old, "");
-  menuItem.url = menuItem.url.replace(wp_ip_secure, "");
+  menuItem.url = menuItem.url.replace(wpIp, "");
+  menuItem.url = menuItem.url.replace(wpUrlOld, "");
+  menuItem.url = menuItem.url.replace(wpIpSecure, "");
 
   if (menuItem.children) {
     menuItem.children.forEach(child => {
@@ -368,9 +377,9 @@ function replaceUrl(input) {
     return;
   }
 
-  input.link = input.link.replace(wp_ip, "");
-  input.link = input.link.replace(wp_url_old, "");
-  input.link = input.link.replace(wp_ip_secure, "");
+  input.link = input.link.replace(wpIp, "");
+  input.link = input.link.replace(wpUrlOld, "");
+  input.link = input.link.replace(wpIpSecure, "");
   return input;
 }
 
@@ -378,11 +387,11 @@ function replaceUrl(input) {
   Based on a category slug, return all category IDs that are in that category's hiearchy
 */
 async function getCategoryId(slug) {
-  let req_url = categories_url + '?slug=' + slug;
-  let categoryResp = await fetch(req_url);
-  let categoryObj = await categoryResp.json();
-  let root = categoryObj[0].id;
-  let cats = [];
+  const reqUrl = `${categoriesUrl}?slug=${slug}`;
+  const categoryResp = await fetch(reqUrl);
+  const categoryObj = await categoryResp.json();
+  const root = categoryObj[0].id;
+  const cats = [];
 
   await getAllCategoryIds(root, cats);
 
@@ -391,16 +400,16 @@ async function getCategoryId(slug) {
 
 
 async function getAllCategoryIds(id, cats) {
-  let req_url = categories_url + '?parent=' + id;
-  let categoryObj = await request(req_url);
+  const reqUrl = `${categoriesUrl}?parent=${id}`;
+  const categoryObj = await request(reqUrl);
 
   cats.push(id);
   categoryObj.forEach(c => getAllCategoryIds(c.id, cats));
 }
 
 async function getAuthorId(slug) {
-  let req_url = users_url + '?slug=' + slug;
-  let usersObj = await request(req_url);
+  const reqUrl = `${usersUrl}?slug=${slug}`;
+  const usersObj = await request(reqUrl);
 
   if (usersObj.length === 0) {
     throw Error('users object is empty');

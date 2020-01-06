@@ -1,6 +1,5 @@
 const express = require('express');
 const cors = require('cors');
-const { RedisError } = require('redis-errors');
 const { createLogger } = require('../utilities/logger');
 
 const logger = createLogger('dbk-news', 'warn');
@@ -18,6 +17,7 @@ const EXPIRE = {
   PAGE_SINGLE: 30
 };
 
+// eslint-disable-next-line new-cap
 const router = express.Router();
 
 router.use(cors());
@@ -56,7 +56,7 @@ function handleRedisError(req, res, redisError) {
   });
 
   logger.error({
-    redisError: redisError,
+    redisError,
     req
   });
 }
@@ -70,7 +70,7 @@ function handleRedisError(req, res, redisError) {
  * @param {number} expireValue How long the result should be cached in Redis (in seconds)
  */
 function handleWpResult(req, res, expireValue) {
-  return (wpResponse) => {
+  return wpResponse => {
     // Only cache successful responses
     // Undefined response code is the same as 200
     if (typeof wpResponse.response_code === 'undefined') {
@@ -102,14 +102,14 @@ function handleWpResult(req, res, expireValue) {
  * @apiParam  {String} [orderby] How to order the results. [asc, desc]
  */
 router.get('/articles', (req, res) => {
-  let articles = req.query.per_page;
-  let page = req.query.page;
-  let category = req.query.category;
-  let author = req.query.author;
-  let search = req.query.search;
-  let preview = req.query.preview;
-  let order = req.query.order;
-  let orderby = req.query.orderby;
+  const articles = req.query.per_page;
+  const { page } = req.query;
+  const { category } = req.query;
+  const { author } = req.query;
+  const { search } = req.query;
+  const { preview } = req.query;
+  const { order } = req.query;
+  const { orderby } = req.query;
 
   wpApi.getArticles(articles, page, category, author, search, preview, order, orderby)
     .then(handleWpResult(req, res, EXPIRE.ARTICLE_LIST));
@@ -123,7 +123,7 @@ router.get('/articles', (req, res) => {
  * @apiParam  {String} articleId Unique article ID (slug).
  */
 router.get('/articles/:articleId', (req, res) => {
-  let articleId = req.params.articleId;
+  const { articleId } = req.params;
 
   wpApi.getArticle(articleId)
     .then(handleWpResult(req, res, EXPIRE.ARTICLE_SINGLE));
@@ -147,9 +147,9 @@ router.get('/featured_article', (req, res) => {
  * @apiParam  {String} menuId Unique menu ID.
  */
 router.get('/menu/:id', (req, res) => {
-  let menu_id = req.params.id;
+  const menuId = req.params.id;
 
-  wpApi.getMenu(menu_id)
+  wpApi.getMenu(menuId)
     .then(handleWpResult(req, res, EXPIRE.MENU_SINGLE));
 });
 
@@ -161,9 +161,9 @@ router.get('/menu/:id', (req, res) => {
  * @apiParam  {String} categoryId Unique category ID.
  */
 router.get('/category/:id', (req, res) => {
-  let category_id = req.params.id;
+  const categoryId = req.params.id;
 
-  wpApi.getCategory(category_id)
+  wpApi.getCategory(categoryId)
     .then(handleWpResult(req, res, EXPIRE.CATEGORY_SINGLE));
 });
 
@@ -175,9 +175,9 @@ router.get('/category/:id', (req, res) => {
  * @apiParam  {String} authorId Unique author ID.
  */
 router.get('/author/:id', (req, res) => {
-  let author_id = req.params.id;
+  const authorId = req.params.id;
 
-  wpApi.getAuthor(author_id)
+  wpApi.getAuthor(authorId)
     .then(handleWpResult(req, res, EXPIRE.AUTHOR_SINGLE));
 });
 
@@ -190,7 +190,7 @@ router.get('/author/:id', (req, res) => {
  *
  */
 router.get('/pages', (req, res) => {
-  let search = req.query.search;
+  const { search } = req.query;
 
   wpApi.getPages(search)
     .then(handleWpResult(req, res, EXPIRE.PAGE_LIST));
@@ -204,7 +204,7 @@ router.get('/pages', (req, res) => {
  * @apiParam  {String} pageId Unique page ID.
  */
 router.get('/pages/:pageId', (req, res) => {
-  let pageId = req.params.pageId;
+  const { pageId } = req.params;
 
   wpApi.getPage(pageId)
     .then(handleWpResult(req, res, EXPIRE.PAGE_SINGLE));

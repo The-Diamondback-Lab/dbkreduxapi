@@ -1,9 +1,9 @@
-let mysql = require('mysql');
-let util = require('util');
+const mysql = require('mysql');
+const util = require('util');
 
 require('dotenv').config();
 
-let pool = mysql.createPool({
+const pool = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
