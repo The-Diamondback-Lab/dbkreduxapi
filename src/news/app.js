@@ -47,15 +47,19 @@ router.use((req, res, next) => {
  *
  * @param {Express.Request} req
  * @param {Express.Response} res
- * @param {RedisError} err
+ * @param {RedisError} redisError
  */
-function handleRedisError(req, res, err) {
+function handleRedisError(req, res, redisError) {
   res.status(500).send({
-    name: err.name,
-    message: err.message
+    name: redisError.name,
+    message: redisError.message
   });
 
   // TODO log the request and error objects
+  errorLogger.error({
+    redisError: redisError,
+    req
+  });
 }
 
 function wpResolver(req, res, expireValue) {
