@@ -1,5 +1,6 @@
 const fetch = require('node-fetch');
 const url = require('url');
+const { createLogger } = require('./logger');
 
 const wpUrlSecure = 'https://wp.dbknews.com';
 const wpUrlOld = "https://wordpress.dbknews.com";
@@ -12,6 +13,8 @@ const menuUrl = `${wpUrlSecure}/wp-json/wp-api-menus/v2/menus`;
 const categoriesUrl = `${wpUrlSecure}/wp-json/wp/v2/categories`;
 const usersUrl = `${wpUrlSecure}/wp-json/wp/v2/users`;
 const pagesUrl = `${wpUrlSecure}/wp-json/wp/v2/pages`;
+
+const logger = createLogger('dbk-wpapi');
 
 /** FUNCTIONS USED BY APP.JS **/
 
@@ -89,6 +92,13 @@ exports.getArticle = async function (articleId) {
 
     return sanitizeArticle(article);
   } catch (err) {
+    logger.error({
+      call: {
+        name: exports.getArticle.name,
+        args: [articleId]
+      }
+    });
+
     return error('article_not_found', `Invalid article ID '${articleId}'.`, 404);
   }
 };
@@ -110,6 +120,14 @@ exports.getFeaturedArticle = async function () {
       'categories': article.categories
     };
   } catch (err) {
+    logger.error({
+      call: {
+        name: exports.getFeaturedArticle.name,
+        args: []
+      },
+      err
+    });
+
     return error('featured_article_not_found', 'Featured article not found.', 404);
   }
 };
@@ -134,6 +152,14 @@ exports.getMenu = async function (menuName) {
 
     return menuObj;
   } catch (err) {
+    logger.error({
+      call: {
+        name: exports.getMenu.name,
+        args: [menuName]
+      },
+      err
+    });
+
     return error('menu_not_found', `Invalid menu ID '${menuName}'.`, 404);
   }
 };
@@ -158,6 +184,14 @@ exports.getCategory = async function (categoryName) {
 
     return sanitizeCategory(category);
   } catch (err) {
+    logger.error({
+      call: {
+        name: exports.getCategory.name,
+        args: [categoryName]
+      },
+      err
+    });
+
     return error('category_not_found', `Invalid category ID '${categoryName}'.`, 404);
   }
 };
@@ -181,6 +215,14 @@ exports.getAuthor = async function (authorName) {
 
     return author;
   } catch (err) {
+    logger.error({
+      call: {
+        name: exports.getAuthor.name,
+        args: [authorName]
+      },
+      err
+    });
+
     return error('author_not_found', `Invalid author ID '${authorName}'.`, 404);
   }
 };
@@ -199,6 +241,14 @@ exports.getPages = async function (search) {
 
     return pages;
   } catch (err) {
+    logger.error({
+      call: {
+        name: exports.getPages.name,
+        args: [search]
+      },
+      err
+    });
+
     return error('pages_bad_request', 'Invalid request for pages.', 400);
   }
 };
@@ -211,6 +261,14 @@ exports.getPage = async function (pageName) {
 
     return sanitizePage(pages[0]);
   } catch (err) {
+    logger.error({
+      call: {
+        name: exports.getPage.name,
+        args: [pageName]
+      },
+      err
+    });
+
     return error('page_not_found', `Invalid page ID '${pageName}'.`, 404);
   }
 };
