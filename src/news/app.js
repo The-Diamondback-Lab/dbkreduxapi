@@ -62,7 +62,15 @@ function handleRedisError(req, res, redisError) {
   });
 }
 
-function wpResolver(req, res, expireValue) {
+/**
+ * Returns a function that takes in a response object from the included WordPress service.
+ * The response result is cached if and only if the response code is 200.
+ *
+ * @param {Express.Request} req
+ * @param {Express.Response} res
+ * @param {number} expireValue How long the result should be cached in Redis (in seconds)
+ */
+function handleWpResult(req, res, expireValue) {
   return (data) => {
     // Only cache successful responses
     // Undefined response code is the same as 200
@@ -101,7 +109,7 @@ router.get('/articles', (req, res) => {
   let orderby = req.query.orderby;
 
   wpApi.getArticles(articles, page, category, author, search, preview, order, orderby)
-    .then(wpResolver(req, res, EXPIRE.ARTICLE_LIST));
+    .then(handleWpResult(req, res, EXPIRE.ARTICLE_LIST));
 });
 
 /**
@@ -115,7 +123,7 @@ router.get('/articles/:articleId', (req, res) => {
   let articleId = req.params.articleId;
 
   wpApi.getArticle(articleId)
-    .then(wpResolver(req, res, EXPIRE.ARTICLE_SINGLE));
+    .then(handleWpResult(req, res, EXPIRE.ARTICLE_SINGLE));
 });
 
 /**
@@ -125,7 +133,7 @@ router.get('/articles/:articleId', (req, res) => {
  */
 router.get('/featured_article', (req, res) => {
   wpApi.getFeaturedArticle()
-    .then(wpResolver(req, res, EXPIRE.ARTICLE_FEATURED));
+    .then(handleWpResult(req, res, EXPIRE.ARTICLE_FEATURED));
 });
 
 /**
@@ -139,7 +147,7 @@ router.get('/menu/:id', (req, res) => {
   let menu_id = req.params.id;
 
   wpApi.getMenu(menu_id)
-    .then(wpResolver(req, res, EXPIRE.MENU_SINGLE));
+    .then(handleWpResult(req, res, EXPIRE.MENU_SINGLE));
 });
 
 /**
@@ -153,7 +161,7 @@ router.get('/category/:id', (req, res) => {
   let category_id = req.params.id;
 
   wpApi.getCategory(category_id)
-    .then(wpResolver(req, res, EXPIRE.CATEGORY_SINGLE));
+    .then(handleWpResult(req, res, EXPIRE.CATEGORY_SINGLE));
 });
 
 /**
@@ -167,7 +175,7 @@ router.get('/author/:id', (req, res) => {
   let author_id = req.params.id;
 
   wpApi.getAuthor(author_id)
-    .then(wpResolver(req, res, EXPIRE.AUTHOR_SINGLE));
+    .then(handleWpResult(req, res, EXPIRE.AUTHOR_SINGLE));
 });
 
 /**
@@ -182,7 +190,7 @@ router.get('/pages', (req, res) => {
   let search = req.query.search;
 
   wpApi.getPages(search)
-    .then(wpResolver(req, res, EXPIRE.PAGE_LIST));
+    .then(handleWpResult(req, res, EXPIRE.PAGE_LIST));
 });
 
 /**
@@ -196,7 +204,7 @@ router.get('/pages/:pageId', (req, res) => {
   let pageId = req.params.pageId;
 
   wpApi.getPage(pageId)
-    .then(wpResolver(req, res, EXPIRE.PAGE_SINGLE));
+    .then(handleWpResult(req, res, EXPIRE.PAGE_SINGLE));
 });
 
 module.exports = router;
