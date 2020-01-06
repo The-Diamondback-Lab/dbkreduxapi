@@ -55,7 +55,6 @@ function handleRedisError(req, res, redisError) {
     message: redisError.message
   });
 
-  // TODO log the request and error objects
   logger.error({
     redisError: redisError,
     req
