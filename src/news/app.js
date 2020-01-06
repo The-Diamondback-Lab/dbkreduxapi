@@ -3,7 +3,7 @@ const cors = require('cors');
 const { RedisError } = require('redis-errors');
 const { createLogger } = require('../utilities/logger');
 
-const errorLogger = createLogger('dbk-news');
+const logger = createLogger('dbk-news');
 const wpApi = require('../utilities/wordpress-service.js');
 const redis = require('../utilities/redis');
 
@@ -56,7 +56,7 @@ function handleRedisError(req, res, redisError) {
   });
 
   // TODO log the request and error objects
-  errorLogger.error({
+  logger.error({
     redisError: redisError,
     req
   });
@@ -66,7 +66,7 @@ function handleRedisError(req, res, redisError) {
  * Returns a function that takes in a response object from the included WordPress service.
  * The response result is cached if and only if the response code is 200.
  *
- * @param {Express.Request} req
+ * @param {Express.Request} req The original request
  * @param {Express.Response} res
  * @param {number} expireValue How long the result should be cached in Redis (in seconds)
  */
