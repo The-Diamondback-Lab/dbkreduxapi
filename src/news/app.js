@@ -3,7 +3,7 @@ const cors = require('cors');
 const { RedisError } = require('redis-errors');
 const { createLogger } = require('../utilities/logger');
 
-const logger = createLogger('dbk-news');
+const logger = createLogger('dbk-news', 'warn');
 const wpApi = require('../utilities/wordpress-service.js');
 const redis = require('../utilities/redis');
 
@@ -70,16 +70,16 @@ function handleRedisError(req, res, redisError) {
  * @param {number} expireValue How long the result should be cached in Redis (in seconds)
  */
 function handleWpResult(req, res, expireValue) {
-  return (data) => {
+  return (wpResponse) => {
     // Only cache successful responses
     // Undefined response code is the same as 200
-    if (typeof data.response_code === 'undefined') {
-      redis.setex(req.originalUrl, expireValue, JSON.stringify(data));
+    if (typeof wpResponse.response_code === 'undefined') {
+      redis.setex(req.originalUrl, expireValue, JSON.stringify(wpResponse));
     } else {
-      res.status(data.response_code);
+      res.status(wpResponse.response_code);
     }
 
-    res.send(data);
+    res.send(wpResponse);
   };
 }
 
