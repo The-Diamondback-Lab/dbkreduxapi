@@ -3,7 +3,7 @@ const cors = require('cors');
 const { createLogger } = require('../utilities/logger');
 const db = require('../utilities/db');
 
-const errorLogger = createLogger('dbk-salary');
+const logger = createLogger('dbk-salary');
 
 // Page size and columns for SQL table
 const PAGESIZE = 10;
@@ -25,8 +25,8 @@ router.get('/salary/year/:year', async (req, res) => {
     return;
   }
 
-  let results = await runQuery(res, query.string, query.params);
-  let count = await runQuery(res, countQuery.string, countQuery.params);
+  let results = await runQuery(req, res, query.string, query.params);
+  let count = await runQuery(req, res, countQuery.string, countQuery.params);
 
   sendResponse(res, 200, {
     data: results,
@@ -40,7 +40,7 @@ router.get('/salary/years', async (req, res) => {
     params: []
   };
 
-  let tables = await runQuery(res, tableQuery.string, tableQuery.params);
+  let tables = await runQuery(req, res, tableQuery.string, tableQuery.params);
 
   tables = tables.map(t => t.Tables_in_saldbinstance.replace('Data', ''));
 
@@ -154,16 +154,21 @@ function handleError (res, error) {
 /**
  * Runs a SQL query and returns the result, otherwise sends an error.
  *
+ * @param {Express.Request} req The original request.
  * @param {Express.Response} res The response object.
  * @param {string} query Query string to pass into SQL.
  * @param {array} params Objects to substitute into the query.
  */
-async function runQuery(res, query, params) {
+async function runQuery(req, res, query, params) {
   try {
     let results = await db.query(query, params);
     return results;
-  } catch (err) {
-    handleError(res, err);
+  } catch (sqlError) {
+    logger.error({
+      req,
+      sqlError
+    });
+    handleError(res, sqlError);
   }
 }
 
