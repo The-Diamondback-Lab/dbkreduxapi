@@ -117,8 +117,8 @@ rules:
       ignoreUrls: true
   max-lines-per-function:
     - warn
-    - skipBlankLines
-    - skipComments
+    - skipBlankLines: true
+      skipComments: true
   max-nested-callbacks: error
   max-statements-per-line: error
   multiline-ternary:
