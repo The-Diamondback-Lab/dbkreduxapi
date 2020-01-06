@@ -1,6 +1,6 @@
 const fetch = require('node-fetch');
 
-const wp_url_secure = 'https://wp.dbknews.com';
+const wp_url_secure = 'http://wp.dbknews.com';
 const wp_url_old = "https://wordpress.dbknews.com";
 const wp_ip = "http://54.196.232.70";
 const wp_ip_secure = "https://54.196.232.70";
@@ -52,7 +52,14 @@ exports.getArticles = async function (limitArticles, page, category, author, sea
     preview = (prev === "true");
   }
 
-  const raw = await request(url);
+  let raw = null;
+
+  try {
+    raw = await request(url);
+  } catch (err) {
+    console.error(err);
+    return error('server_error', 'Something went wrong on our end', 500);
+  }
 
   if (typeof raw.code !== 'undefined' && raw.code === 'rest_post_invalid_page_number') {
     return error("invalid_page_number", "Page number is out of range", 400);
@@ -200,7 +207,11 @@ exports.getPage = async function (pageName) {
 /** HELPER FUNCTIONS **/
 
 async function request(url) {
-  var raw = await fetch(url);
+  var raw = await fetch(url, {
+    headers: {
+      'Accept': 'application/json'
+    }
+  });
   return await raw.json();
 }
 
@@ -351,7 +362,7 @@ async function getAuthorName(url) {
 */
 async function getCategoryId(slug) {
   const req_url = categories_url + "?slug=" + slug;
-  const categoryResp = await fetch(req_url);
+  const categoryResp = await request(req_url);
   const categoryObj = await categoryResp.json();
   var root = categoryObj[0].id;
   var cats = [];
