@@ -76,6 +76,10 @@ function handleWpResult(req, res, expireValue) {
     if (typeof wpResponse.response_code === 'undefined') {
       redis.setex(req.originalUrl, expireValue, JSON.stringify(wpResponse));
     } else {
+      logger.warn({
+        req,
+        wpResponse
+      });
       res.status(wpResponse.response_code);
     }
 
