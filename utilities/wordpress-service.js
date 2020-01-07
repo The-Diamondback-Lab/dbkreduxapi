@@ -363,7 +363,7 @@ async function getAuthorName(url) {
 async function getCategoryId(slug) {
   const req_url = categories_url + "?slug=" + slug;
   const categoryResp = await request(req_url);
-  const categoryObj = await categoryResp.json();
+  const categoryObj = categoryResp;
   var root = categoryObj[0].id;
   var cats = [];
   await getAllCategoryIds(root, cats);
