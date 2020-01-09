@@ -1,6 +1,6 @@
 const fetch = require('node-fetch');
 
-const wp_url_secure = 'http://wp.dbknews.com';
+const wp_url_secure = 'https://wp.dbknews.com';
 const wp_url_old = "https://wordpress.dbknews.com";
 const wp_ip = "http://54.196.232.70";
 const wp_ip_secure = "https://54.196.232.70";
