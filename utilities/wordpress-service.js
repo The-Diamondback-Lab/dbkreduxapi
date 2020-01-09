@@ -309,6 +309,7 @@ function sanitizePage(page) {
 }
 
 function sanitizeMenuUrls(menuItem) {
+  menuItem.url = menuItem.url.replace(wp_url_secure, "");
   menuItem.url = menuItem.url.replace(wp_ip, "");
   menuItem.url = menuItem.url.replace(wp_url_old, "");
   menuItem.url = menuItem.url.replace(wp_ip_secure, "");
@@ -326,6 +327,8 @@ function replaceUrl(input) {
   if (!input.link) {
     return;
   }
+
+  input.link = input.link.replace(wp_url_secure, "");
   input.link = input.link.replace(wp_ip, "");
   input.link = input.link.replace(wp_url_old, "");
   input.link = input.link.replace(wp_ip_secure, "");
