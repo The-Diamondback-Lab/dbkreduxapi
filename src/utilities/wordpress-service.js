@@ -83,7 +83,7 @@ exports.getArticles = async function (perPage, page, category, author,
   } catch (err) {
     logger.error({
       call: {
-        name: exports.getArticle.name,
+        name: exports.getArticles.name,
         args: [perPage, page, category, author, search, preview, order, orderby]
       },
       err
@@ -306,6 +306,24 @@ function error(code, message, response_code) {
     // eslint-disable-next-line camelcase
     response_code
   };
+}
+
+/**
+ * Logs an error given the function where it originated from, an error, and
+ * any arguments for that function.
+ *
+ * @param {Function} func Function where error originated from
+ * @param {object} err The error thrown
+ * @param  {...any} args Arguments that the function was invoked with
+ */
+function logError(func, err, ...args) {
+  logger.error({
+    call: {
+      name: func.name,
+      args
+    },
+    err
+  });
 }
 
 function sanitizeQuery(query) {
