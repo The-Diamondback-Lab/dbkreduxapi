@@ -277,17 +277,13 @@ exports.getPage = async function (pageName) {
 /** HELPER FUNCTIONS **/
 
 async function request(reqUrl) {
-  const raw = await fetch(reqUrl, {
+  const response = await fetch(reqUrl, {
     headers: {
       'Accept': 'application/json'
     }
   });
 
-  if (raw == null) {
-    throw raw;
-  }
-
-  return raw.json();
+  return response == null ? null : response.json();
 }
 
 /* eslint-disable */
@@ -323,10 +319,8 @@ function sanitizeArticle(article) {
   article.author = replaceUrl(article.author);
 
   if (article.author.user_twitter){
-    /* eslint-disable */
-    article.author.user_twitter = article.author.user_twitter.trim();
-    article.author.user_twitter = article.author.user_twitter.replace('@', '');
-    /* eslint-enable */
+    // eslint-disable-next-line camelcase
+    article.author.user_twitter = article.author.user_twitter.trim().replace('@', '');
   }
 
   delete article.author._links;
@@ -410,10 +404,10 @@ function sanitizePage(page) {
 }
 
 function sanitizeMenuUrls(menuItem) {
-  menuItem.url = menuItem.url.replace(wpUrlSecure, "");
-  menuItem.url = menuItem.url.replace(wpIp, "");
-  menuItem.url = menuItem.url.replace(wpUrlOld, "");
-  menuItem.url = menuItem.url.replace(wpIpSecure, "");
+  menuItem.url = menuItem.url.replace(wpUrlSecure, '');
+  menuItem.url = menuItem.url.replace(wpIp, '');
+  menuItem.url = menuItem.url.replace(wpUrlOld, '');
+  menuItem.url = menuItem.url.replace(wpIpSecure, '');
 
   if (menuItem.children) {
     menuItem.children.forEach(child => {
@@ -429,10 +423,11 @@ function replaceUrl(input) {
     return;
   }
 
-  input.link = input.link.replace(wpUrlSecure, "");
-  input.link = input.link.replace(wpIp, "");
-  input.link = input.link.replace(wpUrlOld, "");
-  input.link = input.link.replace(wpIpSecure, "");
+  input.link = input.link.replace(wpUrlSecure, '');
+  input.link = input.link.replace(wpIp, '');
+  input.link = input.link.replace(wpUrlOld, '');
+  input.link = input.link.replace(wpIpSecure, '');
+
   return input;
 }
 
@@ -442,8 +437,7 @@ function replaceUrl(input) {
 async function getCategoryId(slug) {
   const reqUrl = `${categoriesUrl}?slug=${slug}`;
   const categoryResp = await fetch(reqUrl);
-  const categoryObj = categoryResp;
-  const root = categoryObj[0].id;
+  const root = categoryResp[0].id;
   const cats = [];
 
   await getAllCategoryIds(root, cats);
