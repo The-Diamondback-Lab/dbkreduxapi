@@ -20,22 +20,11 @@ const logger = createLogger('dbk-wpapi');
 
 exports.getArticles = async function (perPage, page, category, author,
   search, preview, order, orderby) {
-  const query = sanitizeQuery({
-    // eslint-disable-next-line camelcase
-    per_page: perPage,
-    page,
-    search,
-    order,
-    orderby
-  });
-
-  let reqUrl = allPostsUrl + url.format({ query });
+  let categoryVal = null, authorVal = null;
 
   if (typeof category !== 'undefined') {
     try {
-      const categoryIds = await getCategoryId(category);
-
-      reqUrl += `categories=${categoryIds}&`;
+      categoryVal = (await getCategoryId(category)).join(',');
     } catch (err) {
       return error('invalid_category_name', `Invalid category name '${category}'.`, 400);
     }
@@ -43,9 +32,7 @@ exports.getArticles = async function (perPage, page, category, author,
 
   if (typeof author !== 'undefined') {
     try {
-      const authorId = await getAuthorId(author);
-
-      reqUrl += `author=${authorId}&`;
+      authorVal = await getAuthorId(author);
     } catch (err) {
       logError('getArticles', err, perPage, page, category, author,
         search, preview, order, orderby);
@@ -54,6 +41,17 @@ exports.getArticles = async function (perPage, page, category, author,
   }
 
   try {
+    const query = sanitizeQuery({
+      // eslint-disable-next-line camelcase
+      per_page: perPage,
+      page,
+      search,
+      order,
+      orderby,
+      categories: categoryVal,
+      author: authorVal
+    });
+    const reqUrl = allPostsUrl + url.format({ query });
     const raw = await request(reqUrl);
 
     return getArticles$Helper0(raw, preview);
