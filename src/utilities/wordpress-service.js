@@ -405,11 +405,27 @@ function sanitizePage(page) {
   return page;
 }
 
+function sanitizeUrl(url) {
+  const targets = [
+    wpUrlSecure,
+    wpUrlOld,
+    wpIp,
+    wpIpSecure
+  ];
+
+  targets.forEach(target => {
+    if (url.indexOf(target) >= 0) {
+      url = url.replace(target, '');
+
+      logger.debug(`sanitizeUrl Replaced ${target}`);
+    }
+  });
+
+  return url;
+}
+
 function sanitizeMenuUrls(menuItem) {
-  menuItem.url = menuItem.url.replace(wpUrlSecure, '');
-  menuItem.url = menuItem.url.replace(wpIp, '');
-  menuItem.url = menuItem.url.replace(wpUrlOld, '');
-  menuItem.url = menuItem.url.replace(wpIpSecure, '');
+  menuItem.url = sanitizeUrl(menuItem.url);
 
   if (menuItem.children) {
     menuItem.children.forEach(child => {
@@ -425,10 +441,7 @@ function replaceUrl(input) {
     return;
   }
 
-  input.link = input.link.replace(wpUrlSecure, '');
-  input.link = input.link.replace(wpIp, '');
-  input.link = input.link.replace(wpUrlOld, '');
-  input.link = input.link.replace(wpIpSecure, '');
+  input.link = sanitizeUrl(input.link, '');
 
   return input;
 }
