@@ -6,15 +6,26 @@ const redisConf = {
   port: '6379'
 };
 
-const redisClient = redis.createClient(redisConf);
-redisClient.auth(process.env.REDISPWD);
+let redisClient = null;
 
-redisClient.on('connect', () => {
-  console.log('[redis] Client connected');
-});
+if (process.env.NODE_ENV !== 'production') {
+  // Provide a very simple mock of the redis client
+  redisClient = {
+    get: (_, cb) => cb(null, null),
+    // eslint-disable-next-line no-empty-function
+    setex() {}
+  };
+} else {
+  redisClient = redis.createClient(redisConf);
+  redisClient.auth(process.env.REDISPWD);
 
-redisClient.on('error', err => {
-  console.log(`[redis] Error: ${err}`);
-});
+  redisClient.on('connect', () => {
+    console.log('[redis] Client connected');
+  });
+
+  redisClient.on("error", err => {
+    console.log(`[redis] Error: ${err}`);
+  });
+}
 
 module.exports = redisClient;

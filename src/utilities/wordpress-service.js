@@ -277,7 +277,11 @@ exports.getPage = async function (pageName) {
 /** HELPER FUNCTIONS **/
 
 async function request(reqUrl) {
-  const raw = await fetch(reqUrl);
+  const raw = await fetch(reqUrl, {
+    headers: {
+      'Accept': 'application/json'
+    }
+  });
 
   if (raw == null) {
     throw raw;
@@ -406,6 +410,7 @@ function sanitizePage(page) {
 }
 
 function sanitizeMenuUrls(menuItem) {
+  menuItem.url = menuItem.url.replace(wpUrlSecure, "");
   menuItem.url = menuItem.url.replace(wpIp, "");
   menuItem.url = menuItem.url.replace(wpUrlOld, "");
   menuItem.url = menuItem.url.replace(wpIpSecure, "");
@@ -424,6 +429,7 @@ function replaceUrl(input) {
     return;
   }
 
+  input.link = input.link.replace(wpUrlSecure, "");
   input.link = input.link.replace(wpIp, "");
   input.link = input.link.replace(wpUrlOld, "");
   input.link = input.link.replace(wpIpSecure, "");
@@ -436,7 +442,7 @@ function replaceUrl(input) {
 async function getCategoryId(slug) {
   const reqUrl = `${categoriesUrl}?slug=${slug}`;
   const categoryResp = await fetch(reqUrl);
-  const categoryObj = await categoryResp.json();
+  const categoryObj = categoryResp;
   const root = categoryObj[0].id;
   const cats = [];
 

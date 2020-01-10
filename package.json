@@ -9,7 +9,7 @@
   },
   "scripts": {
     "lint": "eslint --fix src/**/*.js",
-    "dev": "cross-env PORT=8080 node ./src/server.js",
+    "dev": "cross-env NODE_ENV=development PORT=8080 node ./src/server.js",
     "start": "cross-env NODE_ENV=production node ./src/server.js",
     "build-docs": "apidoc -e node_modules/"
   },

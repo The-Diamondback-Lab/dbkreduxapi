@@ -7,7 +7,8 @@
       "name": "Launch Server",
       "program": "${workspaceFolder}/src/server.js",
       "env": {
-        "PORT": "8080"
+        "PORT": "8080",
+        "NODE_ENV": "development"
       },
       "skipFiles": [
         "<node_internals>/**"
