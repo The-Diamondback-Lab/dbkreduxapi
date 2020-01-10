@@ -438,7 +438,7 @@ function replaceUrl(input) {
  */
 async function getCategoryId(slug) {
   const reqUrl = `${categoriesUrl}?slug=${slug}`;
-  const categoryResp = await fetch(reqUrl);
+  const categoryResp = await request(reqUrl);
   const root = categoryResp[0].id;
   const cats = [];
 
