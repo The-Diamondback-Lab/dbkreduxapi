@@ -51,7 +51,10 @@ exports.getArticles = async function (perPage, page, category, author,
       categories: categoryVal,
       author: authorVal
     });
-    const reqUrl = allPostsUrl + url.format({ query });
+    // Remove the first character from the original query string,
+    // so we can append it onto allPostsUrl
+    const queryString = (url.format({ query })).substring(1);
+    const reqUrl = allPostsUrl + queryString;
     const raw = await request(reqUrl);
 
     return getArticles$Helper0(raw, preview);
