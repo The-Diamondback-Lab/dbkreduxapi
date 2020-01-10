@@ -47,6 +47,8 @@ exports.getArticles = async function (perPage, page, category, author,
 
       reqUrl += `author=${authorId}&`;
     } catch (err) {
+      logError(exports.getArticles, err, perPage, page, category, author,
+        search, preview, order, orderby);
       return error('invalid_author_id', `Invalid author ID '${author}'.`, 400);
     }
   }
