@@ -47,7 +47,7 @@ exports.getArticles = async function (perPage, page, category, author,
 
       reqUrl += `author=${authorId}&`;
     } catch (err) {
-      logError(exports.getArticles, err, perPage, page, category, author,
+      logError('getArticles', err, perPage, page, category, author,
         search, preview, order, orderby);
       return error('invalid_author_id', `Invalid author ID '${author}'.`, 400);
     }
@@ -58,7 +58,7 @@ exports.getArticles = async function (perPage, page, category, author,
 
     return getArticles$Helper0(raw, preview);
   } catch (err) {
-    logError(exports.getArticles, err, perPage, page, category, author, search,
+    logError('getArticles', err, perPage, page, category, author, search,
       preview, order, orderby);
 
     return error('get_articles_error', 'Unexpected error', 500);
@@ -105,7 +105,7 @@ exports.getArticle = async function (articleId) {
 
     return sanitizeArticle(article);
   } catch (err) {
-    logError(exports.getArticle, err, articleId);
+    logError('getArticle', err, articleId);
 
     return error('article_not_found', `Invalid article ID '${articleId}'.`, 404);
   }
@@ -128,7 +128,7 @@ exports.getFeaturedArticle = async function () {
       'categories': article.categories
     };
   } catch (err) {
-    logError(exports.getFeaturedArticle, err);
+    logError('getFeaturedArticle', err);
 
     return error('featured_article_not_found', 'Featured article not found.', 404);
   }
@@ -154,7 +154,7 @@ exports.getMenu = async function (menuName) {
 
     return menuObj;
   } catch (err) {
-    logError(exports.getMenu, err, menuName);
+    logError('getMenu', err, menuName);
 
     return error('menu_not_found', `Invalid menu ID '${menuName}'.`, 404);
   }
@@ -180,7 +180,7 @@ exports.getCategory = async function (categoryName) {
 
     return sanitizeCategory(category);
   } catch (err) {
-    logError(exports.getCategory, err, categoryName);
+    logError('getCategory', err, categoryName);
 
     return error('category_not_found', `Invalid category ID '${categoryName}'.`, 404);
   }
@@ -205,7 +205,7 @@ exports.getAuthor = async function (authorName) {
 
     return author;
   } catch (err) {
-    logError(exports.getAuthor, err, authorName);
+    logError('getAuthor', err, authorName);
 
     return error('author_not_found', `Invalid author ID '${authorName}'.`, 404);
   }
@@ -225,7 +225,7 @@ exports.getPages = async function (search) {
 
     return pages;
   } catch (err) {
-    logError(exports.getPages, err, search);
+    logError('getPages', err, search);
 
     return error('pages_bad_request', 'Invalid request for pages.', 400);
   }
@@ -239,7 +239,7 @@ exports.getPage = async function (pageName) {
 
     return sanitizePage(pages[0]);
   } catch (err) {
-    logError(exports.getPage, err, pageName);
+    logError('getPage', err, pageName);
 
     return error('page_not_found', `Invalid page ID '${pageName}'.`, 404);
   }
@@ -269,17 +269,16 @@ function error(code, message, response_code) {
 }
 
 /**
- * Logs an error given the function where it originated from, an error, and
- * any arguments for that function.
+ * Logs an error given the it's origin, an error, and any arguments for the request.
  *
- * @param {Function} func Function where error originated from
+ * @param {string} originName Some sort of identifier to indicate where the error originated from
  * @param {object} err The error thrown
  * @param  {...any} args Arguments that the function was invoked with
  */
-function logError(func, err, ...args) {
+function logError(originName, err, ...args) {
   logger.error({
     call: {
-      name: func.name,
+      name: originName,
       args
     },
     err
