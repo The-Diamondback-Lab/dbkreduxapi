@@ -18,16 +18,28 @@ const logger = createLogger('dbk-wpapi');
 
 /** FUNCTIONS USED BY APP.JS **/
 
+function sanitizeQuery(query) {
+  const newQuery = {};
+
+  for (const k in query) {
+    if (query[k] != null) {
+      newQuery[k] = query[k];
+    }
+  }
+
+  return newQuery;
+}
+
 exports.getArticles = async function (perPage, page, category, author,
   search, preview, order, orderby) {
-  const query = {
+  const query = sanitizeQuery({
     // eslint-disable-next-line camelcase
     per_page: perPage,
     page,
     search,
     order,
     orderby
-  };
+  });
 
   let reqUrl = allPostsUrl + url.format({ query });
 
