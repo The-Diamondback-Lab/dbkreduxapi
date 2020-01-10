@@ -85,7 +85,8 @@ exports.getArticles = async function (perPage, page, category, author,
       call: {
         name: exports.getArticle.name,
         args: [perPage, page, category, author, search, preview, order, orderby]
-      }
+      },
+      err
     });
 
     return error('get_articles_error', 'Unexpected error', 500);
