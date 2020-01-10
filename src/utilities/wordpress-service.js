@@ -56,32 +56,7 @@ exports.getArticles = async function (perPage, page, category, author,
   try {
     const raw = await request(reqUrl);
 
-    if (typeof raw.code !== 'undefined' && raw.code === 'rest_post_invalid_page_number') {
-      return error('invalid_page_number', 'Page number is out of range', 400);
-    }
-
-    const resp = raw.map(ele => {
-      const article = sanitizeArticle(ele);
-
-      // Only return necessary fields if preview flag is enabled, otherwise the full response
-      if (preview) {
-        return {
-          'id': article.id,
-          'title': article.title,
-          'link': article.link,
-          'date': article.date,
-          'modified': article.modified,
-          'excerpt': article.excerpt.rendered,
-          'author': article.author,
-          'featured_image': article.featured_image,
-          'categories': article.categories
-        };
-      } else {
-        return article;
-      }
-    });
-
-    return resp;
+    return getArticles$Helper0(raw, preview);
   } catch (err) {
     logError(exports.getArticles, err, perPage, page, category, author, search,
       preview, order, orderby);
@@ -89,6 +64,35 @@ exports.getArticles = async function (perPage, page, category, author,
     return error('get_articles_error', 'Unexpected error', 500);
   }
 };
+
+function getArticles$Helper0(raw, preview) {
+  if (typeof raw.code !== 'undefined' && raw.code === 'rest_post_invalid_page_number') {
+    return error('invalid_page_number', 'Page number is out of range', 400);
+  }
+
+  const resp = raw.map(ele => {
+    const article = sanitizeArticle(ele);
+
+    // Only return necessary fields if preview flag is enabled, otherwise the full response
+    if (preview) {
+      return {
+        'id': article.id,
+        'title': article.title,
+        'link': article.link,
+        'date': article.date,
+        'modified': article.modified,
+        'excerpt': article.excerpt.rendered,
+        'author': article.author,
+        'featured_image': article.featured_image,
+        'categories': article.categories
+      };
+    } else {
+      return article;
+    }
+  });
+
+  return resp;
+}
 
 exports.getArticle = async function (articleId) {
   articleId = articleId.trim();
