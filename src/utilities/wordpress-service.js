@@ -201,7 +201,7 @@ exports.getAuthor = async function (authorName) {
     }
 
     delete author._links;
-    author = replaceUrl(author);
+    author.link = sanitizeUrl(author.link);
 
     return author;
   } catch (err) {
@@ -301,7 +301,7 @@ function sanitizeQuery(query) {
 function sanitizeCategory(category) {
   category.id = category.slug;
 
-  category = replaceUrl(category);
+  category.link = sanitizeUrl(category.link);
 
   delete category.slug;
   delete category._links;
@@ -318,7 +318,7 @@ function sanitizeArticle(article) {
 
   // Retrieve author object
   article.author = article._embedded.author[0];
-  article.author = replaceUrl(article.author);
+  article.author.link = sanitizeUrl(article.author.link);
 
   if (article.author.user_twitter){
     // eslint-disable-next-line camelcase
@@ -335,7 +335,7 @@ function sanitizeArticle(article) {
   // Retrieve categories and extract id, name and link
   article.categories = article._embedded['wp:term'][0];
   article.categories = article.categories.map(cat => {
-    cat = replaceUrl(cat);
+    cat.link = sanitizeUrl(cat.link);
 
     return {
       id: cat.slug,
@@ -345,7 +345,7 @@ function sanitizeArticle(article) {
   });
 
   // Replace link
-  article = replaceUrl(article);
+  article.link = sanitizeUrl(article.link);
 
   // Delete unnecessary fields
   delete article.featured_media;
@@ -394,7 +394,7 @@ function sanitizePage(page) {
   page.id = page.slug;
   page.title = page.title.rendered;
 
-  page = replaceUrl(page);
+  page.link = sanitizeUrl(page.link);
 
   // Delete unnecessary fields
   delete page.featured_media;
@@ -434,16 +434,6 @@ function sanitizeMenuUrls(menuItem) {
       }
     });
   }
-}
-
-function replaceUrl(input) {
-  if (!input.link) {
-    return;
-  }
-
-  input.link = sanitizeUrl(input.link, '');
-
-  return input;
 }
 
 /**
