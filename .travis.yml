@@ -1,0 +1,17 @@
+language: node_js
+node_js:
+ - "10.17.0"
+branches:
+  only:
+  - development
+deploy:
+  provider: elasticbeanstalk
+  access_key_id: ${AWS_KEY}
+  secret_access_key: ${AWS_SECRET}
+  app: dbknews-elastic-beanstalk
+  env: dbkapi-dev
+  bucket_name: ${AWS_S3_BUCKET}
+  on:
+    branch: development
+after_deploy:
+  - echo "Application Deployed!"

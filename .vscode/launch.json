@@ -5,7 +5,7 @@
       "type": "node",
       "request": "launch",
       "name": "Launch Server",
-      "program": "${workspaceFolder}/server.js",
+      "program": "${workspaceFolder}/src/server.js",
       "env": {
         "PORT": "8080",
         "NODE_ENV": "development"
