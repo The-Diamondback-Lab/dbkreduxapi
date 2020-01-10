@@ -18,18 +18,6 @@ const logger = createLogger('dbk-wpapi');
 
 /** FUNCTIONS USED BY APP.JS **/
 
-function sanitizeQuery(query) {
-  const newQuery = {};
-
-  for (const k in query) {
-    if (query[k] != null) {
-      newQuery[k] = query[k];
-    }
-  }
-
-  return newQuery;
-}
-
 exports.getArticles = async function (perPage, page, category, author,
   search, preview, order, orderby) {
   const query = sanitizeQuery({
@@ -309,15 +297,27 @@ async function request(reqUrl) {
   return response == null ? null : response.json();
 }
 
-/* eslint-disable */
+// eslint-disable-next-line camelcase
 function error(code, message, response_code) {
   return {
     code,
     message,
+    // eslint-disable-next-line camelcase
     response_code
   };
 }
-/* eslint-enable */
+
+function sanitizeQuery(query) {
+  const newQuery = {};
+
+  for (const k in query) {
+    if (query[k] != null) {
+      newQuery[k] = query[k];
+    }
+  }
+
+  return newQuery;
+}
 
 function sanitizeCategory(category) {
   category.id = category.slug;
