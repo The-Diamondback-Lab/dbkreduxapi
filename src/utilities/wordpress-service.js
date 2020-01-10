@@ -81,13 +81,8 @@ exports.getArticles = async function (perPage, page, category, author,
 
     return resp;
   } catch (err) {
-    logger.error({
-      call: {
-        name: exports.getArticles.name,
-        args: [perPage, page, category, author, search, preview, order, orderby]
-      },
-      err
-    });
+    logError(exports.getArticles, err, perPage, page, category, author, search,
+      preview, order, orderby);
 
     return error('get_articles_error', 'Unexpected error', 500);
   }
@@ -104,12 +99,7 @@ exports.getArticle = async function (articleId) {
 
     return sanitizeArticle(article);
   } catch (err) {
-    logger.error({
-      call: {
-        name: exports.getArticle.name,
-        args: [articleId]
-      }
-    });
+    logError(exports.getArticle, err, articleId);
 
     return error('article_not_found', `Invalid article ID '${articleId}'.`, 404);
   }
@@ -132,13 +122,7 @@ exports.getFeaturedArticle = async function () {
       'categories': article.categories
     };
   } catch (err) {
-    logger.error({
-      call: {
-        name: exports.getFeaturedArticle.name,
-        args: []
-      },
-      err
-    });
+    logError(exports.getFeaturedArticle, err);
 
     return error('featured_article_not_found', 'Featured article not found.', 404);
   }
@@ -164,13 +148,7 @@ exports.getMenu = async function (menuName) {
 
     return menuObj;
   } catch (err) {
-    logger.error({
-      call: {
-        name: exports.getMenu.name,
-        args: [menuName]
-      },
-      err
-    });
+    logError(exports.getMenu, err, menuName);
 
     return error('menu_not_found', `Invalid menu ID '${menuName}'.`, 404);
   }
@@ -196,13 +174,7 @@ exports.getCategory = async function (categoryName) {
 
     return sanitizeCategory(category);
   } catch (err) {
-    logger.error({
-      call: {
-        name: exports.getCategory.name,
-        args: [categoryName]
-      },
-      err
-    });
+    logError(exports.getCategory, err, categoryName);
 
     return error('category_not_found', `Invalid category ID '${categoryName}'.`, 404);
   }
@@ -227,13 +199,7 @@ exports.getAuthor = async function (authorName) {
 
     return author;
   } catch (err) {
-    logger.error({
-      call: {
-        name: exports.getAuthor.name,
-        args: [authorName]
-      },
-      err
-    });
+    logError(exports.getAuthor, err, authorName);
 
     return error('author_not_found', `Invalid author ID '${authorName}'.`, 404);
   }
@@ -253,13 +219,7 @@ exports.getPages = async function (search) {
 
     return pages;
   } catch (err) {
-    logger.error({
-      call: {
-        name: exports.getPages.name,
-        args: [search]
-      },
-      err
-    });
+    logError(exports.getPages, err, search);
 
     return error('pages_bad_request', 'Invalid request for pages.', 400);
   }
@@ -273,13 +233,7 @@ exports.getPage = async function (pageName) {
 
     return sanitizePage(pages[0]);
   } catch (err) {
-    logger.error({
-      call: {
-        name: exports.getPage.name,
-        args: [pageName]
-      },
-      err
-    });
+    logError(exports.getPage, err, pageName);
 
     return error('page_not_found', `Invalid page ID '${pageName}'.`, 404);
   }
