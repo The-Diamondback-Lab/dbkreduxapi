@@ -405,7 +405,7 @@ function sanitizePage(page) {
   return page;
 }
 
-function sanitizeUrl(url) {
+function sanitizeUrl(link) {
   const targets = [
     wpUrlSecure,
     wpUrlOld,
@@ -414,14 +414,14 @@ function sanitizeUrl(url) {
   ];
 
   targets.forEach(target => {
-    if (url.indexOf(target) >= 0) {
-      url = url.replace(target, '');
+    if (link.indexOf(target) >= 0) {
+      link = link.replace(target, '');
 
       logger.debug(`sanitizeUrl Replaced ${target}`);
     }
   });
 
-  return url;
+  return link;
 }
 
 function sanitizeMenuUrls(menuItem) {
