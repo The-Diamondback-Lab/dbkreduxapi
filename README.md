@@ -25,6 +25,14 @@ production).
 | `DB_USER` | Username for logging onto the MySQL instance | `true` |
 | `DB_PASSWORD` | Password for logging onto the MySQL instance | `true` |
 
+### SSL Certificate
+
+Since we want HTTPS enabled in production, we provide paths to our SSL certificate files.
+The `https` module allows us to create a server with a certificate and our Express application.
+
+HTTPS is not necessary for development purposes, but you can provide your own SSL certificate if
+you choose to.
+
 ### MySQL
 
 Since the MySQL variables _are_ development variables, you'll have to connect to your own MySQL
