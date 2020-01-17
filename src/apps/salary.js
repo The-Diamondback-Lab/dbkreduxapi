@@ -13,8 +13,8 @@ const COLUMNS = ['Division', 'Department', 'Title', 'Employee', 'Salary'];
 const router = express.Router();
 router.use(cors());
 
-router.get('/salary', (req, res) => {
-  res.redirect('https://api.dbknews.com/#tag-salary');
+router.get('/salary', (_, res) => {
+  res.redirect('/docs/#/salary');
 });
 
 router.get('/salary/year/:year', async (req, res) => {
