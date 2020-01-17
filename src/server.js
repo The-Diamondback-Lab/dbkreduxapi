@@ -2,9 +2,9 @@ const https = require('https');
 const fs = require('fs');
 const express = require('express');
 const compression = require('compression');
-const baseRouter = require('./base');
-const newsRouter = require('./news/app');
-const salaryRouter = require('./salary/app');
+const baseRouter = require('./apps/base');
+const newsRouter = require('./apps/news');
+const salaryRouter = require('./apps/salary');
 
 require('dotenv').config();
 
