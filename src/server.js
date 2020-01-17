@@ -26,7 +26,7 @@ const certData = certPath ? fs.readFileSync(certPath) : null;
 // If private key or certificate weren't present, don't start the server
 // underneath HTTPS
 if (keyData == null || certData == null) {
-  console.warn('Not using a certificate');
+  console.log('Not using a certificate');
   app.listen(port, () => {
     console.log(`App is listening on port ${port}.`);
   });
