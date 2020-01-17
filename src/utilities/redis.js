@@ -7,6 +7,9 @@ let redisClient = null;
 
 // If ALL Redis env vars are provided, then use an actual Redis client
 if (REDIS_HOST && REDIS_PORT && REDIS_PASSWORD) {
+  console.log(`[redis] HOST=${REDIS_HOST}`);
+  console.log(`[redis] PORT=${REDIS_PORT}`);
+  console.log(`[redis] PASSWORD=${REDIS_PASSWORD ? '*****' : '<undefined>'}`);
   redisClient = redis.createClient({
     host: REDIS_HOST,
     port: REDIS_PORT
