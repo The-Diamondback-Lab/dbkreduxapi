@@ -1,55 +1,40 @@
 # DBK Redux API
 
-This project is built using [Express](https://expressjs.com/).
+An open-source RESTful API for retrieving article and other content published by The Diamondback
+Newspaper.
 
-## Getting Started
+## Environment Variables
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+Environment variables are primarily loaded through a `.env` file, but can also be specified through
+the command line. Command line variables take higher priority.
 
-### Prerequisites
+Variables are indicated whether or not they are necessary for development (and consequently
+production).
 
-To work on this project, you'll need to have Node and Git installed. If you don't already, you can download Node [here](https://nodejs.org/en/download/) and Git [here](https://git-scm.com/downloads).
+| Variable | Description | Development?
+|-|-|-|
+| `PORT` | Port for server to listen to (default is `8080`) | `true` |
+| `PRIVATE_KEY_PATH` | Path to a private key for an SSL certificate | `false` |
+| `CERTIFICATE_PATH` | Path to a certificate file for an SSL certificate | `false` |
+| `REDISPWD` | Password for accessing a Redis database | `false`
+| `DB_HOST` | Hostname for a MySQL instance (for salary data) | `true`
+| `DB_PORT`| Port the MySQL instance is listening on | `true`
+| `DB_NAME` | Name of the database on the MySQL instance to access | `true`
+| `DB_USER` | Username for logging onto the MySQL instance | `true`
+| `DB_PASSWORD` | Password for logging onto the MySQL instance | `true`
 
-### Installing
+### MySQL
 
-Follow the steps below to get your development enviroment set up.
-
-1.  Pull the repo. Open the terminal and and run the following:
-
-    ```
-    git clone https://github.com/The-Diamondback-Lab/dbk-redux-api.git
-    ```
-
-2.  After cloning the repo, open the project. In the root folder, run the following command:
-
-    ```
-    npm install
-    ```
-
-    in the terminal. This will install the necessary dependencies for the project. A list of those dependencies can be found in `package.json`.
-
-3.  For testing purposes, because this is a serverless project, we use a package to simulate a serverless environment called      [Now We Test](https://www.npmjs.com/package/now-we-test). This is still in development, but it works for now. To install      it, run:
-
-    ```
-    npm install -g now-we-test
-    ```
+Since the MySQL variables _are_ development variables, you'll have to connect to your own MySQL
+database; either remotely, such as AWS RDS, or locally through [MySQL Community Server](https://dev.mysql.com/downloads/mysql/).
 
 ## Development
 
-Open a new terminal tab and run `now-we-test serve`. This will simulate a serverless environment locally on your machine, which can be accessed at http://localhost:3000.
+Run `npm run dev`, which will start the server, with environment variables imported from the `.env`
+file.
 
-## Deployment
+## Documentation
 
-The API is deployed to Zeit's [Now](https://zeit.co/now). Once you get set up with an account, you must be added to The Diamondback Lab team. Once you do that, deployment is simple:
-
-1. Install the Now CLI: https://github.com/zeit/now-cli
-
-2. Once you authenticate, switch from your account to the team's account by running `now switch` and choosing the team.
-
-3. To deploy, simply run `now`. Now will grab all necessary deployment information from the included `now.json`. It will automatically use the stored secret variables as environment variables in deployment, as specified in `now.json`. More on that: https://zeit.co/blog/environment-variables-secrets.
-
-4. If the deployment looks good, you can alias it to the production URL. To do this, run `now alias api.dbknews.com`. 
-
-## Built With
-
-- [Express](https://expressjs.com/) - Node.js web application framework
+REST endpoints are documented via [Swagger UI](https://swagger.io/tools/swagger-ui/) and are
+provided by the `/docs` endpoint when the server is running. (The `/` endpoint will also redirect
+to the documentation)
