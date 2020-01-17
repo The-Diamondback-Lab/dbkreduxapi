@@ -24,6 +24,7 @@ if (REDIS_HOST && REDIS_PORT && REDIS_PASSWORD) {
     console.log(`[redis] Error: ${err}`);
   });
 } else {
+  console.log('[redis] Mocking client');
   // Provide a very simple mock of the redis client
   redisClient = {
     get: (_, cb) => cb(null, null),
