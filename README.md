@@ -16,7 +16,9 @@ production).
 | `PORT` | Port for server to listen to (default is `8080`) | `true` |
 | `PRIVATE_KEY_PATH` | Path to a private key for an SSL certificate | `false` |
 | `CERTIFICATE_PATH` | Path to a certificate file for an SSL certificate | `false` |
-| `REDISPWD` | Password for accessing a Redis database | `false`
+| `REDIS_HOST` | Host for a Redis database | `false` |
+| `REDIS_PORT` | Port for the Redis database | `false` |
+| `REDIS_PASSWORD` | Password for accessing the Redis database | `false`
 | `DB_HOST` | Hostname for a MySQL instance (for salary data) | `true`
 | `DB_PORT`| Port the MySQL instance is listening on | `true`
 | `DB_NAME` | Name of the database on the MySQL instance to access | `true`
