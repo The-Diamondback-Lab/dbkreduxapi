@@ -1,6 +1,7 @@
 const fetch = require('node-fetch');
 const url = require('url');
 const { createLogger } = require('./logger');
+require('dotenv').config();
 
 const wpUrlSecure = 'https://wp.dbknews.com';
 const wpUrlOld = "https://wordpress.dbknews.com";
@@ -14,7 +15,7 @@ const categoriesUrl = `${wpUrlSecure}/wp-json/wp/v2/categories`;
 const usersUrl = `${wpUrlSecure}/wp-json/wp/v2/users`;
 const pagesUrl = `${wpUrlSecure}/wp-json/wp/v2/pages`;
 
-const logger = createLogger('dbk-wpapi');
+const logger = createLogger('dbk-wpapi', process.env.LOG_LEVEL);
 
 /** FUNCTIONS USED BY APP.JS **/
 
@@ -417,7 +418,7 @@ function sanitizeUrl(link) {
     if (link.indexOf(target) >= 0) {
       link = link.replace(target, '');
 
-      logger.debug(`sanitizeUrl Replaced ${target}`);
+      logger.info(`sanitizeUrl Replaced ${target}`);
     }
   });
 
