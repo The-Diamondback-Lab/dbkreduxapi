@@ -3,7 +3,7 @@ const cors = require('cors');
 const { createLogger } = require('../utilities/logger');
 const db = require('../utilities/db');
 
-const logger = createLogger('dbk-salary');
+const logger = createLogger('dbk-salary', process.env.LOG_LEVEL);
 
 // Page size and columns for SQL table
 const PAGESIZE = 10;
