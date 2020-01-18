@@ -42,10 +42,10 @@ function reqSerializer(req) {
  * @param {Logger.LogLevel} level Logging level (see bunyan logger level values
  * for accepted values)
  */
-function createLogger(name, level = 'error') {
+function createLogger(name, level) {
   return bunyan.createLogger({
     name,
-    level,
+    level: level || 'error',
     serializers: {
       req: reqSerializer
     },
