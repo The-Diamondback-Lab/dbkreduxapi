@@ -3,14 +3,14 @@ const url = require('url');
 const { createLogger } = require('./logger');
 require('dotenv').config();
 
-const wpUrlSecure = 'https://wp.dbknews.com';
+const wpUrl = 'https://wp.dbknews.com';
 
-const allPostsUrl = `${wpUrlSecure}/wp-json/wp/v2/posts?_embed&`;
-const featuredPostUrl = `${wpUrlSecure}/wp-json/wp/v2/posts?featured-story=1&per_page=1&_embed`;
-const menuUrl = `${wpUrlSecure}/wp-json/wp-api-menus/v2/menus`;
-const categoriesUrl = `${wpUrlSecure}/wp-json/wp/v2/categories`;
-const usersUrl = `${wpUrlSecure}/wp-json/wp/v2/users`;
-const pagesUrl = `${wpUrlSecure}/wp-json/wp/v2/pages`;
+const allPostsUrl = `${wpUrl}/wp-json/wp/v2/posts?_embed&`;
+const featuredPostUrl = `${wpUrl}/wp-json/wp/v2/posts?featured-story=1&per_page=1&_embed`;
+const menuUrl = `${wpUrl}/wp-json/wp-api-menus/v2/menus`;
+const categoriesUrl = `${wpUrl}/wp-json/wp/v2/categories`;
+const usersUrl = `${wpUrl}/wp-json/wp/v2/users`;
+const pagesUrl = `${wpUrl}/wp-json/wp/v2/pages`;
 
 const logger = createLogger('dbk-wpapi', process.env.LOG_LEVEL);
 
@@ -404,7 +404,7 @@ function sanitizePage(page) {
 }
 
 function sanitizeUrl(link) {
-  return link.replace(wpUrlSecure, '');
+  return link.replace(wpUrl, '');
 }
 
 function sanitizeMenuUrls(menuItem) {
