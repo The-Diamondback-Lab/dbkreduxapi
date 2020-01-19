@@ -4,9 +4,6 @@ const { createLogger } = require('./logger');
 require('dotenv').config();
 
 const wpUrlSecure = 'https://wp.dbknews.com';
-const wpUrlOld = "https://wordpress.dbknews.com";
-const wpIp = "http://54.196.232.70";
-const wpIpSecure = "https://54.196.232.70";
 
 const allPostsUrl = `${wpUrlSecure}/wp-json/wp/v2/posts?_embed&`;
 const featuredPostUrl = `${wpUrlSecure}/wp-json/wp/v2/posts?featured-story=1&per_page=1&_embed`;
@@ -407,22 +404,7 @@ function sanitizePage(page) {
 }
 
 function sanitizeUrl(link) {
-  const targets = [
-    wpUrlSecure,
-    wpUrlOld,
-    wpIp,
-    wpIpSecure
-  ];
-
-  targets.forEach(target => {
-    if (link.indexOf(target) >= 0) {
-      link = link.replace(target, '');
-
-      logger.info(`sanitizeUrl Replaced ${target}`);
-    }
-  });
-
-  return link;
+  return link.replace(wpUrlSecure, '');
 }
 
 function sanitizeMenuUrls(menuItem) {
