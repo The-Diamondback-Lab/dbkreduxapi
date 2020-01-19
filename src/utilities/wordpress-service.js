@@ -404,19 +404,7 @@ function sanitizePage(page) {
 }
 
 function sanitizeUrl(link) {
-  const targets = [
-    wpUrl
-  ];
-
-  targets.forEach(target => {
-    if (link.indexOf(target) >= 0) {
-      link = link.replace(target, '');
-
-      logger.info(`sanitizeUrl Replaced ${target}`);
-    }
-  });
-
-  return link;
+  return link.replace(wpUrl, '');
 }
 
 function sanitizeMenuUrls(menuItem) {
