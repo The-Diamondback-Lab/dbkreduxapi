@@ -3,7 +3,7 @@ const url = require('url');
 const { createLogger } = require('./logger');
 require('dotenv').config();
 
-const wpUrl = 'https://wp.dbknews.com';
+const wpUrl = process.env.WP_URL || 'https://wp.dbknews.com';
 
 const allPostsUrl = `${wpUrl}/wp-json/wp/v2/posts?_embed&`;
 const featuredPostUrl = `${wpUrl}/wp-json/wp/v2/posts?featured-story=1&per_page=1&_embed`;
