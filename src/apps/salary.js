@@ -3,7 +3,7 @@ const cors = require('cors');
 const { createLogger } = require('../utilities/logger');
 const db = require('../utilities/db');
 
-const logger = createLogger('dbk-salary');
+const logger = createLogger('dbk-salary', process.env.LOG_LEVEL);
 
 // Page size and columns for SQL table
 const PAGESIZE = 10;
@@ -13,8 +13,8 @@ const COLUMNS = ['Division', 'Department', 'Title', 'Employee', 'Salary'];
 const router = express.Router();
 router.use(cors());
 
-router.get('/salary', (req, res) => {
-  res.redirect('https://api.dbknews.com/#tag-salary');
+router.get('/salary', (_, res) => {
+  res.redirect('/docs/#/salary');
 });
 
 router.get('/salary/year/:year', async (req, res) => {

@@ -9,6 +9,7 @@ if (!fs.existsSync('./logs')) {
 const timestamp = new Date(Date.now())
   .toISOString()
   .replace(/:/g, '-');
+const loggerNames = new Set();
 
 /**
  * Serializes an Express request object to a simple object
@@ -35,23 +36,31 @@ function reqSerializer(req) {
 /**
  * Creates an logger with a serializer for Express Request objects. By default,
  * the level is set to `error` and the logger outputs to
- * `./log/{timestamp}-{name}.log`. The value of `timestamp` will be a full ISO
+ * `./log/{timestamp}.log`. The value of `timestamp` will be a full ISO
  * time string, fixed to whenever this module is loaded in.
+ *
+ * Duplicate logger names are not allowed.
  *
  * @param {string} name Name of the logger
  * @param {Logger.LogLevel} level Logging level (see bunyan logger level values
  * for accepted values)
  */
-function createLogger(name, level = 'error') {
+function createLogger(name, level) {
+  if (loggerNames.has(name)) {
+    throw new Error('Duplicate logger name');
+  }
+
+  loggerNames.add(name);
+
   return bunyan.createLogger({
     name,
-    level,
+    level: level || 'error',
     serializers: {
       req: reqSerializer
     },
     streams: [{
       type: 'file',
-      path: `./logs/${timestamp}-${name}.log`
+      path: `./logs/${timestamp}.log`
     }]
   });
 }

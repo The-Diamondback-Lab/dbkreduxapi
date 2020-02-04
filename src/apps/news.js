@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const { createLogger } = require('../utilities/logger');
 
-const logger = createLogger('dbk-news', 'warn');
+const logger = createLogger('dbk-news', process.env.LOG_LEVEL);
 const wpApi = require('../utilities/wordpress-service.js');
 const redis = require('../utilities/redis');
 
