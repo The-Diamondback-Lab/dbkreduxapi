@@ -26,10 +26,12 @@ pool.getConnection((err, connection) => {
       console.error('[mysql] Unexpected error');
       console.error(err);
     }
-  }
+  } else {
+    console.log('[mysql] Connected');
 
-  if (connection) {
-    connection.release();
+    if (connection) {
+      connection.release();
+    }
   }
 });
 
