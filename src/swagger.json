@@ -87,7 +87,7 @@
           "summary": "Gets a list of DBK articles."
         }
       },
-      "/article/{articleId}": {
+      "/articles/{articleId}": {
         "get": {
           "tags": [
             "articles"
