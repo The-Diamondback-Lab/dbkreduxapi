@@ -76,6 +76,7 @@ function getArticles$Helper0(raw, preview) {
     if (preview) {
       return {
         'wp_id': article.wp_id,
+        'acf': article.acf,
         'id': article.id,
         'title': article.title,
         'link': article.link,
@@ -118,6 +119,7 @@ exports.getFeaturedArticle = async function () {
 
     return {
       'wp_id': article.wp_id,
+      'acf': article.acf,
       'id': article.id,
       'title': article.title,
       'link': article.link,
