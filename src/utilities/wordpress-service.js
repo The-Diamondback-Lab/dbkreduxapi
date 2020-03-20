@@ -75,6 +75,8 @@ function getArticles$Helper0(raw, preview) {
     // Only return necessary fields if preview flag is enabled, otherwise the full response
     if (preview) {
       return {
+        'wp_id': article.wp_id,
+        'acf': article.acf,
         'id': article.id,
         'title': article.title,
         'link': article.link,
@@ -116,6 +118,8 @@ exports.getFeaturedArticle = async function () {
     article = sanitizeArticle(article[0]);
 
     return {
+      'wp_id': article.wp_id,
+      'acf': article.acf,
       'id': article.id,
       'title': article.title,
       'link': article.link,
@@ -308,7 +312,11 @@ function sanitizeCategory(category) {
 }
 
 function sanitizeArticle(article) {
-  // Replace numerical id with slug
+  // Save wordpress id
+  // eslint-disable-next-line camelcase
+  article.wp_id = article.id;
+
+  // Replace wordpress id with slug
   article.id = article.slug;
   delete article.slug;
 
