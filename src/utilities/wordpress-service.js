@@ -6,7 +6,7 @@ require('dotenv').config();
 const wpUrl = 'https://wp.dbknews.com';
 
 const allPostsUrl = `${wpUrl}/wp-json/wp/v2/posts?_embed&`;
-const featuredPostUrl = `${wpUrl}/wp-json/wp/v2/posts?featured-story=1&per_page=1&_embed`;
+const featuredPostUrl = `${wpUrl}/wp-json/featured_story`;
 const menuUrl = `${wpUrl}/wp-json/wp-api-menus/v2/menus`;
 const categoriesUrl = `${wpUrl}/wp-json/wp/v2/categories`;
 const usersUrl = `${wpUrl}/wp-json/wp/v2/users`;
@@ -114,7 +114,8 @@ exports.getArticle = async function (articleId) {
 
 exports.getFeaturedArticle = async function () {
   try {
-    let article = await request(featuredPostUrl);
+    const baseArticle = await request(featuredPostUrl);
+    let article = await request(`${allPostsUrl}slug=${baseArticle.post_name}`);
     article = sanitizeArticle(article[0]);
 
     return {
