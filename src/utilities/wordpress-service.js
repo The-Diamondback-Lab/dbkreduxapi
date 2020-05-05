@@ -3,7 +3,7 @@ const url = require('url');
 const { createLogger } = require('./logger');
 require('dotenv').config();
 
-const wpUrl = 'https://wp.dbknews.com';
+const { WP_URL: wpUrl } = process.env;
 
 const allPostsUrl = `${wpUrl}/wp-json/wp/v2/posts?_embed&`;
 const featuredPostUrl = `${wpUrl}/wp-json/featured_story`;
@@ -199,9 +199,12 @@ exports.getAuthor = async function (authorName) {
     let author = await request(reqUrl);
     author = author[0];
 
-    if (author.user_twitter) {
+    if (author.acf.twitter_handle) {
       // eslint-disable-next-line camelcase
-      author.user_twitter = author.user_twitter.replace('@', '');
+      author.acf.twitter_handle = author.acf.twitter_handle.replace('@', '');
+      // TODO FIX LEGACY CODE
+      // eslint-disable-next-line camelcase
+      author.user_twitter = author.acf.twitter_handle;
     }
 
     delete author._links;
@@ -327,9 +330,12 @@ function sanitizeArticle(article) {
   article.author = article._embedded.author[0];
   article.author.link = sanitizeUrl(article.author.link);
 
-  if (article.author.user_twitter){
+  if (article.author.acf.twitter_handle) {
     // eslint-disable-next-line camelcase
-    article.author.user_twitter = article.author.user_twitter.trim().replace('@', '');
+    article.author.acf.twitter_handle = article.author.acf.twitter_handle.replace('@', '');
+    // TODO FIX LEGACY CODE
+    // eslint-disable-next-line camelcase
+    article.author.user_twitter = article.author.acf.twitter_handle;
   }
 
   delete article.author._links;
