@@ -10,6 +10,7 @@ const EXPIRE = {
   ARTICLE_LIST: 60,
   ARTICLE_SINGLE: 30,
   ARTICLE_FEATURED: 60,
+  ARTICLE_BANNER: 150,
   MENU_SINGLE: 300,
   CATEGORY_SINGLE: 300,
   AUTHOR_SINGLE: 300,
@@ -137,6 +138,11 @@ router.get('/articles/:articleId', (req, res) => {
 router.get('/featured_article', (req, res) => {
   wpApi.getFeaturedArticle()
     .then(handleWpResult(req, res, EXPIRE.ARTICLE_FEATURED));
+});
+
+router.get('/banner_article', (req, res) => {
+  wpApi.getBannerArticle()
+    .then(handleWpResult(req, res, EXPIRE.ARTICLE_BANNER));
 });
 
 /**

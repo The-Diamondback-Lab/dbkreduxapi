@@ -7,6 +7,7 @@ const WP_URL = process.env.WP_URL || 'https://wp.dbknews.com';
 
 const ALL_POSTS_URL = `${WP_URL}/wp-json/wp/v2/posts?_embed&`;
 const FEATURED_POST_URL = `${WP_URL}/wp-json/featured_story`;
+const BANNER_POST_URL = `${WP_URL}/wp-json/banner_article`;
 const MENU_URL = `${WP_URL}/wp-json/wp-api-menus/v2/menus`;
 const CATEGORIES_URL = `${WP_URL}/wp-json/wp/v2/categories`;
 const USERS_URL = `${WP_URL}/wp-json/wp/v2/users`;
@@ -135,6 +136,32 @@ exports.getFeaturedArticle = async function () {
     logError('getFeaturedArticle', err);
 
     return error('featured_article_not_found', 'Featured article not found.', 404);
+  }
+};
+
+exports.getBannerArticle = async function() {
+  try {
+    const baseArticle = await request(BANNER_POST_URL);
+    let article = await request(`${ALL_POSTS_URL}slug=${baseArticle.post_name}`);
+    article = sanitizeArticle(article[0]);
+
+    return {
+      'wp_id': article.wp_id,
+      'acf': article.acf,
+      'id': article.id,
+      'title': article.title,
+      'link': article.link,
+      'date': article.date,
+      'modified': article.modified,
+      'excerpt': article.excerpt.rendered,
+      'author': article.author,
+      'featured_image': article.featured_image,
+      'categories': article.categories
+    };
+  } catch (err) {
+    logError('getBannerArticle', err);
+
+    return error('banner_article_not_found', 'Banner article not found', 404);
   }
 };
 
