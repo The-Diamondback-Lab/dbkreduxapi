@@ -1,6 +1,6 @@
 {
   "name": "dbkreduxapi",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "description": "API to retrieve articles and other content from the DBK site.",
   "apidoc": {
     "name": "The Diamondback API",
