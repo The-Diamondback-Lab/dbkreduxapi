@@ -113,9 +113,18 @@ exports.getArticle = async function (articleId) {
   }
 };
 
-exports.getFeaturedArticle = async function () {
+exports.getFeaturedArticle = function () {
+  return getSpecialArticle(FEATURED_POST_URL, 'featured_article_not_found',
+    'Featured article not found');
+};
+
+exports.getBannerArticle = function () {
+  return getSpecialArticle(BANNER_POST_URL, 'banner_article_not_found', 'Banner article not found');
+};
+
+async function getSpecialArticle(specialArticleUrl, errorCode, errorMsg) {
   try {
-    const baseArticle = await request(FEATURED_POST_URL);
+    const baseArticle = await request(specialArticleUrl);
     let article = await request(`${ALL_POSTS_URL}slug=${baseArticle.post_name}`);
     article = sanitizeArticle(article[0]);
 
@@ -133,37 +142,11 @@ exports.getFeaturedArticle = async function () {
       'categories': article.categories
     };
   } catch (err) {
-    logError('getFeaturedArticle', err);
+    logError('getSpecialArticle', err);
 
-    return error('featured_article_not_found', 'Featured article not found.', 404);
+    return error(errorCode, errorMsg, 404);
   }
-};
-
-exports.getBannerArticle = async function() {
-  try {
-    const baseArticle = await request(BANNER_POST_URL);
-    let article = await request(`${ALL_POSTS_URL}slug=${baseArticle.post_name}`);
-    article = sanitizeArticle(article[0]);
-
-    return {
-      'wp_id': article.wp_id,
-      'acf': article.acf,
-      'id': article.id,
-      'title': article.title,
-      'link': article.link,
-      'date': article.date,
-      'modified': article.modified,
-      'excerpt': article.excerpt.rendered,
-      'author': article.author,
-      'featured_image': article.featured_image,
-      'categories': article.categories
-    };
-  } catch (err) {
-    logError('getBannerArticle', err);
-
-    return error('banner_article_not_found', 'Banner article not found', 404);
-  }
-};
+}
 
 exports.getMenu = async function (menuName) {
   try {
