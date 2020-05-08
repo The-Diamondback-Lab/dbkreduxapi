@@ -7,6 +7,7 @@ const WP_URL = process.env.WP_URL || 'https://wp.dbknews.com';
 
 const ALL_POSTS_URL = `${WP_URL}/wp-json/wp/v2/posts?_embed&`;
 const FEATURED_POST_URL = `${WP_URL}/wp-json/featured_story`;
+const BANNER_POST_URL = `${WP_URL}/wp-json/banner_article`;
 const MENU_URL = `${WP_URL}/wp-json/wp-api-menus/v2/menus`;
 const CATEGORIES_URL = `${WP_URL}/wp-json/wp/v2/categories`;
 const USERS_URL = `${WP_URL}/wp-json/wp/v2/users`;
@@ -112,9 +113,18 @@ exports.getArticle = async function (articleId) {
   }
 };
 
-exports.getFeaturedArticle = async function () {
+exports.getFeaturedArticle = function () {
+  return getSpecialArticle(FEATURED_POST_URL, 'featured_article_not_found',
+    'Featured article not found');
+};
+
+exports.getBannerArticle = function () {
+  return getSpecialArticle(BANNER_POST_URL, 'banner_article_not_found', 'Banner article not found');
+};
+
+async function getSpecialArticle(specialArticleUrl, errorCode, errorMsg) {
   try {
-    const baseArticle = await request(FEATURED_POST_URL);
+    const baseArticle = await request(specialArticleUrl);
     let article = await request(`${ALL_POSTS_URL}slug=${baseArticle.post_name}`);
     article = sanitizeArticle(article[0]);
 
@@ -132,11 +142,11 @@ exports.getFeaturedArticle = async function () {
       'categories': article.categories
     };
   } catch (err) {
-    logError('getFeaturedArticle', err);
+    logError('getSpecialArticle', err);
 
-    return error('featured_article_not_found', 'Featured article not found.', 404);
+    return error(errorCode, errorMsg, 404);
   }
-};
+}
 
 exports.getMenu = async function (menuName) {
   try {
