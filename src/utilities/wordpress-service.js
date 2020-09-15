@@ -3,14 +3,15 @@ const url = require('url');
 const { createLogger } = require('./logger');
 require('dotenv').config();
 
-const wpUrl = 'https://wp.dbknews.com';
+const WP_URL = process.env.WP_URL || 'https://wp.dbknews.com';
 
-const allPostsUrl = `${wpUrl}/wp-json/wp/v2/posts?_embed&`;
-const featuredPostUrl = `${wpUrl}/wp-json/wp/v2/posts?featured-story=1&per_page=1&_embed`;
-const menuUrl = `${wpUrl}/wp-json/wp-api-menus/v2/menus`;
-const categoriesUrl = `${wpUrl}/wp-json/wp/v2/categories`;
-const usersUrl = `${wpUrl}/wp-json/wp/v2/users`;
-const pagesUrl = `${wpUrl}/wp-json/wp/v2/pages`;
+const ALL_POSTS_URL = `${WP_URL}/wp-json/wp/v2/posts?_embed&`;
+const FEATURED_POST_URL = `${WP_URL}/wp-json/featured_story`;
+const BANNER_POST_URL = `${WP_URL}/wp-json/banner_article`;
+const MENU_URL = `${WP_URL}/wp-json/wp-api-menus/v2/menus`;
+const CATEGORIES_URL = `${WP_URL}/wp-json/wp/v2/categories`;
+const USERS_URL = `${WP_URL}/wp-json/wp/v2/users`;
+const PAGES_URL = `${WP_URL}/wp-json/wp/v2/pages`;
 
 const logger = createLogger('dbk-wpapi', process.env.LOG_LEVEL);
 
@@ -52,7 +53,7 @@ exports.getArticles = async function (perPage, page, category, author,
     // Remove the first character from the original query string,
     // so we can append it onto allPostsUrl
     const queryString = (url.format({ query })).substring(1);
-    const reqUrl = allPostsUrl + queryString;
+    const reqUrl = ALL_POSTS_URL + queryString;
     const raw = await request(reqUrl);
 
     return getArticles$Helper0(raw, preview);
@@ -98,7 +99,7 @@ function getArticles$Helper0(raw, preview) {
 exports.getArticle = async function (articleId) {
   articleId = articleId.trim();
 
-  const reqUrl = `${allPostsUrl}slug=${articleId}`;
+  const reqUrl = `${ALL_POSTS_URL}slug=${articleId}`;
 
   try {
     const raw = await request(reqUrl);
@@ -112,9 +113,19 @@ exports.getArticle = async function (articleId) {
   }
 };
 
-exports.getFeaturedArticle = async function () {
+exports.getFeaturedArticle = function () {
+  return getSpecialArticle(FEATURED_POST_URL, 'featured_article_not_found',
+    'Featured article not found');
+};
+
+exports.getBannerArticle = function () {
+  return getSpecialArticle(BANNER_POST_URL, 'banner_article_not_found', 'Banner article not found');
+};
+
+async function getSpecialArticle(specialArticleUrl, errorCode, errorMsg) {
   try {
-    let article = await request(featuredPostUrl);
+    const baseArticle = await request(specialArticleUrl);
+    let article = await request(`${ALL_POSTS_URL}slug=${baseArticle.post_name}`);
     article = sanitizeArticle(article[0]);
 
     return {
@@ -131,18 +142,18 @@ exports.getFeaturedArticle = async function () {
       'categories': article.categories
     };
   } catch (err) {
-    logError('getFeaturedArticle', err);
+    logError('getSpecialArticle', err, specialArticleUrl, errorCode, errorMsg);
 
-    return error('featured_article_not_found', 'Featured article not found.', 404);
+    return error(errorCode, errorMsg, 404);
   }
-};
+}
 
 exports.getMenu = async function (menuName) {
   try {
-    let allMenus = await request(menuUrl);
+    let allMenus = await request(MENU_URL);
     allMenus = allMenus.find(menu => menu.name === menuName);
 
-    const reqUrl = (`${menuUrl}/${allMenus.ID}`);
+    const reqUrl = (`${MENU_URL}/${allMenus.ID}`);
     const menuObj = await request(reqUrl);
 
     menuObj.items.forEach(
@@ -166,7 +177,7 @@ exports.getMenu = async function (menuName) {
 exports.getCategory = async function (categoryName) {
   categoryName = categoryName.trim();
 
-  let reqUrl = `${categoriesUrl}?slug=${categoryName}`;
+  let reqUrl = `${CATEGORIES_URL}?slug=${categoryName}`;
 
   try {
     let category = await request(reqUrl);
@@ -176,7 +187,7 @@ exports.getCategory = async function (categoryName) {
     if (category.parent === 0) {
       category.parent = null;
     } else {
-      reqUrl = `${categoriesUrl}/${category.parent}`;
+      reqUrl = `${CATEGORIES_URL}/${category.parent}`;
       const parentCategory = await request(reqUrl);
       category.parent = parentCategory.slug;
     }
@@ -192,15 +203,18 @@ exports.getCategory = async function (categoryName) {
 exports.getAuthor = async function (authorName) {
   authorName = authorName.trim();
 
-  const reqUrl = `${usersUrl}?slug=${authorName}`;
+  const reqUrl = `${USERS_URL}?slug=${authorName}`;
 
   try {
     let author = await request(reqUrl);
     author = author[0];
 
-    if (author.user_twitter) {
+    if (author.acf.twitter_handle) {
       // eslint-disable-next-line camelcase
-      author.user_twitter = author.user_twitter.replace('@', '');
+      author.acf.twitter_handle = author.acf.twitter_handle.replace('@', '');
+      // TODO FIX LEGACY CODE
+      // eslint-disable-next-line camelcase
+      author.user_twitter = author.acf.twitter_handle;
     }
 
     delete author._links;
@@ -219,7 +233,7 @@ exports.getPages = async function (search) {
     search = '';
   }
 
-  const reqUrl = `${pagesUrl}?search=${search}`;
+  const reqUrl = `${PAGES_URL}?search=${search}`;
 
   try {
     let pages = await request(reqUrl);
@@ -235,7 +249,7 @@ exports.getPages = async function (search) {
 };
 
 exports.getPage = async function (pageName) {
-  const reqUrl = `${pagesUrl}?slug=${pageName}`;
+  const reqUrl = `${PAGES_URL}?slug=${pageName}`;
 
   try {
     const pages = await request(reqUrl);
@@ -247,9 +261,6 @@ exports.getPage = async function (pageName) {
     return error('page_not_found', `Invalid page ID '${pageName}'.`, 404);
   }
 };
-
-
-/** HELPER FUNCTIONS **/
 
 async function request(reqUrl) {
   const response = await fetch(reqUrl, {
@@ -326,9 +337,12 @@ function sanitizeArticle(article) {
   article.author = article._embedded.author[0];
   article.author.link = sanitizeUrl(article.author.link);
 
-  if (article.author.user_twitter){
+  if (article.author.acf.twitter_handle) {
     // eslint-disable-next-line camelcase
-    article.author.user_twitter = article.author.user_twitter.trim().replace('@', '');
+    article.author.acf.twitter_handle = article.author.acf.twitter_handle.replace('@', '');
+    // TODO FIX LEGACY CODE
+    // eslint-disable-next-line camelcase
+    article.author.user_twitter = article.author.acf.twitter_handle;
   }
 
   delete article.author._links;
@@ -412,7 +426,7 @@ function sanitizePage(page) {
 }
 
 function sanitizeUrl(link) {
-  return link.replace(wpUrl, '');
+  return link.replace(WP_URL, '');
 }
 
 function sanitizeMenuUrls(menuItem) {
@@ -431,7 +445,7 @@ function sanitizeMenuUrls(menuItem) {
  * Based on a category slug, return all category IDs that are in that category's hiearchy
  */
 async function getCategoryId(slug) {
-  const reqUrl = `${categoriesUrl}?slug=${slug}`;
+  const reqUrl = `${CATEGORIES_URL}?slug=${slug}`;
   const categoryResp = await request(reqUrl);
   const root = categoryResp[0].id;
   const cats = [];
@@ -443,7 +457,7 @@ async function getCategoryId(slug) {
 
 
 async function getAllCategoryIds(id, cats) {
-  const reqUrl = `${categoriesUrl}?parent=${id}`;
+  const reqUrl = `${CATEGORIES_URL}?parent=${id}`;
   const categoryObj = await request(reqUrl);
 
   cats.push(id);
@@ -451,7 +465,7 @@ async function getAllCategoryIds(id, cats) {
 }
 
 async function getAuthorId(slug) {
-  const reqUrl = `${usersUrl}?slug=${slug}`;
+  const reqUrl = `${USERS_URL}?slug=${slug}`;
   const usersObj = await request(reqUrl);
 
   if (usersObj.length === 0) {
