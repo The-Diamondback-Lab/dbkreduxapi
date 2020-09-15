@@ -142,7 +142,7 @@ async function getSpecialArticle(specialArticleUrl, errorCode, errorMsg) {
       'categories': article.categories
     };
   } catch (err) {
-    logError('getSpecialArticle', err);
+    logError('getSpecialArticle', err, specialArticleUrl, errorCode, errorMsg);
 
     return error(errorCode, errorMsg, 404);
   }
@@ -261,9 +261,6 @@ exports.getPage = async function (pageName) {
     return error('page_not_found', `Invalid page ID '${pageName}'.`, 404);
   }
 };
-
-
-/** HELPER FUNCTIONS **/
 
 async function request(reqUrl) {
   const response = await fetch(reqUrl, {
