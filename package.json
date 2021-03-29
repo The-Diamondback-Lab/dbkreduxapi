@@ -12,10 +12,7 @@
     "dev": "cross-env NODE_ENV=development nodemon --inspect ./src/server.js",
     "start": "cross-env NODE_ENV=production nodemon ./src/server.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/The-Diamondback-Lab/dbkreduxapi.git"
-  },
+  "repository": "git+https://github.com/The-Diamondback-Lab/dbkreduxapi.git",
   "author": "The DBK Lab",
   "license": "ISC",
   "bugs": {
